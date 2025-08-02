@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  @apply font-HindSiliguri;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Shimmer Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Custom positioning for react-scroll-to-top button */
+.react-scroll-to-top {
+  right: 20px !important;
+  bottom: 20px !important;
+}
+
+/* Mobile responsive positioning */
+@media (max-width: 768px) {
+  .react-scroll-to-top {
+    right: 16px !important;
+    bottom: 80px !important;
+  }
+}
+
+/* Tablet responsive positioning */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .react-scroll-to-top {
+    right: 18px !important;
+    bottom: 24px !important;
+  }
+}

@@ -14,94 +14,185 @@ const getVisibleCards = (screenWidth) => {
   return 1; // Below 850px - show 1 card with arrows
 };
 
-const CourseCard = ({ card, buttonColor }) => {
+const CourseCard = ({ card, buttonColor, isMobile = false }) => {
   const navigate = useNavigate();
 
   const handleDetailsClick = () => {
     navigate(`/course/${card.id}`, { state: { course: card } });
   };
 
+  // Mobile card (vertical layout like original)
+  if (isMobile) {
+    return (
+      <div className="flex-shrink-0 w-[260px] sm:w-[280px] md:w-[303px] mx-auto bg-white rounded-[16px] shadow-[1px_2px_12px_rgba(0,0,0,0.12)] hover:shadow-[0px_6px_25px_rgba(0,0,0,0.18)] transition-all duration-300 transform hover:scale-102 hover:-translate-y-1 flex flex-col">
+        <div className="h-[180px] sm:h-[200px] md:h-[231px] w-full bg-[#DADBDE] rounded-t-[16px] flex items-center justify-center text-gray-500 text-lg sm:text-xl font-semibold overflow-hidden">
+          {card.course_image ? (
+            <img
+              src={card.course_image}
+              alt={card.title}
+              className="object-cover w-full h-full rounded-t-[16px]"
+            />
+          ) : (
+            <img
+              src="/course.png"
+              alt={card.title}
+              className="object-cover w-full h-full rounded-t-[16px]"
+            />
+          )}
+        </div>
+        <div className="flex flex-col items-start justify-start gap-3 sm:gap-4 p-3 sm:p-4 w-full flex-grow">
+          <div className="flex flex-col items-start justify-start gap-2 sm:gap-3 w-full">
+            <div className="flex flex-col items-start justify-start gap-1 sm:gap-2 w-full">
+              <div className="text-black text-[16px] sm:text-[18px] md:text-[20px] leading-6 font-semibold line-clamp-2">
+                {card.title}
+              </div>
+              <div>
+                <span className="text-[#96A0B0] text-[12px] sm:text-[14px] md:text-[16px] font-normal">
+                  মেয়াদ:{" "}
+                </span>
+                <span className="text-[#96A0B0] text-[12px] sm:text-[14px] md:text-[16px] font-normal font-[Inter]">
+                  {card.duration} মাস
+                </span>
+              </div>
+            </div>
+            <div className="text-black text-[12px] sm:text-[13px] md:text-[14px] font-medium line-clamp-2">
+              ফি: {card.course_fee} টাকা
+            </div>
+          </div>
+        </div>
+        <div className="p-3 sm:p-4 pt-0 sm:pt-0 w-full">
+          <button
+            onClick={handleDetailsClick}
+            style={{ backgroundColor: buttonColor }}
+            className="inline-flex items-center justify-center gap-[10px] rounded px-[16px] sm:px-[18px] md:px-[22px] py-[6px] sm:py-[8px] w-full transition-all duration-200 transform hover:-translate-y-1 hover:opacity-90"
+          >
+            <div className="text-white text-[12px] sm:text-[14px] md:text-[16px] font-medium leading-[24px]">
+              বিস্তারিত
+            </div>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop card (horizontal layout)
   return (
-    <div className="flex-shrink-0 w-[260px] sm:w-[280px] md:w-[303px] mx-1 sm:mx-2 bg-white rounded-[16px] shadow-[1px_2px_12px_rgba(0,0,0,0.12)] hover:shadow-[0px_6px_25px_rgba(0,0,0,0.18)] transition-all duration-300 transform hover:scale-102 hover:-translate-y-1 flex flex-col">
-      <div className="h-[180px] sm:h-[200px] md:h-[231px] w-full bg-[#DADBDE] rounded-t-[16px] flex items-center justify-center text-gray-500 text-lg sm:text-xl font-semibold overflow-hidden">
+    <div className="p-3 bg-white rounded-2xl shadow-[1px_2px_12px_0px_rgba(0,0,0,0.12)] flex justify-center ml:12 items-center gap-4 w-full max-w-2xl hover:shadow-[0px_6px_25px_rgba(0,0,0,0.18)] transition-all duration-300">
+      {/* Course Image */}
+      <div className="w-64 h-48 flex-shrink-0">
         {card.course_image ? (
           <img
             src={card.course_image}
             alt={card.title}
-            className="object-cover w-full h-full rounded-t-[16px]"
+            className="w-full h-full object-cover rounded-2xl"
           />
         ) : (
           <img
             src="/course.png"
             alt={card.title}
-            className="object-cover w-full h-full rounded-t-[16px]"
+            className="w-full h-full object-cover rounded-2xl"
           />
         )}
       </div>
-      <div className="flex flex-col items-start justify-start gap-3 sm:gap-4 p-3 sm:p-4 w-full flex-grow">
-        <div className="flex flex-col items-start justify-start gap-2 sm:gap-3 w-full">
-          <div className="flex flex-col items-start justify-start gap-1 sm:gap-2 w-full">
-            <div className="text-black text-[16px] sm:text-[18px] md:text-[20px] leading-6 font-semibold line-clamp-2">
+
+      {/* Course Content */}
+      <div className="p-4 flex flex-col justify-center items-start gap-4 flex-1">
+        <div className="w-full flex flex-col justify-start items-start gap-3">
+          <div className="w-full flex flex-col justify-start items-start gap-2">
+            <div className="flex flex-col justify-center items-start gap-2">
+              <div className="justify-start">
+                <span className="text-gray-400 text-base font-normal font-['Hind_Siliguri'] leading-normal">মেয়াদ: </span>
+                <span className="text-gray-400 text-base font-normal font-['Inter'] leading-normal">{card.duration} months</span>
+              </div>
+            </div>
+            <div className="w-full justify-start text-black text-xl font-semibold font-['Hind_Siliguri'] leading-normal line-clamp-2">
               {card.title}
             </div>
-            <div>
-              <span className="text-[#96A0B0] text-[12px] sm:text-[14px] md:text-[16px] font-normal">
-                মেয়াদ:{" "}
-              </span>
-              <span className="text-[#96A0B0] text-[12px] sm:text-[14px] md:text-[16px] font-normal font-[Inter]">
-                {card.duration} মাস
-              </span>
-            </div>
           </div>
-          <div className="text-black text-[12px] sm:text-[13px] md:text-[14px] font-medium line-clamp-2">
-            ফি: {card.course_fee} টাকা
+          <div className="w-full justify-start text-black text-lg font-semibold font-['Hind_Siliguri'] leading-normal">
+            কোর্স ফি: {card.course_fee}/-
           </div>
         </div>
-      </div>
-      <div className="p-3 sm:p-4 pt-0 sm:pt-0 w-full">
-      <button
-        onClick={handleDetailsClick}
-        style={{ backgroundColor: buttonColor }}
-        className="inline-flex items-center justify-center gap-[10px] rounded px-[16px] sm:px-[18px] md:px-[22px] py-[6px] sm:py-[8px] w-full transition-all duration-200 transform hover:-translate-y-1 hover:opacity-90"
-      >
-        <div className="text-white text-[12px] sm:text-[14px] md:text-[16px] font-medium leading-[24px]">
-          বিস্তারিত
-        </div>
-      </button>
+        <button
+          onClick={handleDetailsClick}
+          style={{ backgroundColor: buttonColor }}
+          className="w-52 px-5 py-2 rounded flex justify-center items-center gap-2.5 transition-all duration-200 transform hover:-translate-y-1 hover:opacity-90"
+        >
+          <div className="text-white text-base font-medium font-['Hind_Siliguri']">বিস্তারিত</div>
+        </button>
       </div>
     </div>
   );
 };
 
-const CourseCardSkeleton = () => {
+const CourseCardSkeleton = ({ isMobile = false }) => {
+  // Mobile skeleton (vertical layout like original)
+  if (isMobile) {
+    return (
+      <div className="flex-shrink-0 w-[260px] sm:w-[280px] md:w-[303px] mx-auto bg-white rounded-[16px] shadow-[1px_2px_12px_rgba(0,0,0,0.12)] flex flex-col">
+        {/* Image shimmer */}
+        <div className="h-[180px] sm:h-[200px] md:h-[231px] w-full rounded-t-[16px] overflow-hidden">
+          <ShimmerThumbnail height="100%" width="100%" rounded />
+        </div>
+        {/* Content shimmer */}
+        <div className="flex flex-col items-start justify-start gap-3 sm:gap-4 p-3 sm:p-4 w-full flex-grow">
+          <div className="flex flex-col items-start justify-start gap-2 sm:gap-3 w-full">
+            <div className="flex flex-col items-start justify-start gap-1 sm:gap-2 w-full">
+              {/* Title shimmer */}
+              <div className="w-full">
+                <ShimmerText line={2} gap={5} />
+              </div>
+              {/* Duration shimmer */}
+              <div className="w-24 h-4 mt-1">
+                <ShimmerText line={1} gap={5} />
+              </div>
+            </div>
+            {/* Fee shimmer */}
+            <div className="w-32 h-4">
+              <ShimmerText line={1} gap={5} />
+            </div>
+          </div>
+        </div>
+        {/* Button shimmer */}
+        <div className="p-3 sm:p-4 pt-0 sm:pt-0 w-full">
+          <ShimmerButton size="md" />
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop skeleton (horizontal layout)
   return (
-    <div className="flex-shrink-0 w-[260px] sm:w-[280px] md:w-[303px] mx-1 sm:mx-2 bg-white rounded-[16px] shadow-[1px_2px_12px_rgba(0,0,0,0.12)] flex flex-col">
+    <div className="p-3 bg-white rounded-2xl shadow-[1px_2px_12px_0px_rgba(0,0,0,0.12)] flex justify-start items-center gap-4 w-full max-w-2xl">
       {/* Image shimmer */}
-      <div className="h-[180px] sm:h-[200px] md:h-[231px] w-full rounded-t-[16px] overflow-hidden">
+      <div className="w-64 h-48 flex-shrink-0 rounded-2xl overflow-hidden">
         <ShimmerThumbnail height="100%" width="100%" rounded />
       </div>
+
       {/* Content shimmer */}
-      <div className="flex flex-col items-start justify-start gap-3 sm:gap-4 p-3 sm:p-4 w-full flex-grow">
-        <div className="flex flex-col items-start justify-start gap-2 sm:gap-3 w-full">
-          <div className="flex flex-col items-start justify-start gap-1 sm:gap-2 w-full">
+      <div className="p-4 flex flex-col justify-center items-start gap-4 flex-1">
+        <div className="w-full flex flex-col justify-start items-start gap-3">
+          <div className="w-full flex flex-col justify-start items-start gap-2">
+            <div className="flex flex-col justify-center items-start gap-2">
+              {/* Duration shimmer */}
+              <div className="w-32 h-4">
+                <ShimmerText line={1} gap={5} />
+              </div>
+            </div>
             {/* Title shimmer */}
             <div className="w-full">
               <ShimmerText line={2} gap={5} />
             </div>
-            {/* Duration shimmer */}
-            <div className="w-24 h-4 mt-1">
-              <ShimmerText line={1} gap={5} />
-            </div>
           </div>
           {/* Fee shimmer */}
-          <div className="w-32 h-4">
+          <div className="w-40 h-5">
             <ShimmerText line={1} gap={5} />
           </div>
         </div>
-      </div>
-      {/* Button shimmer */}
-      <div className="p-3 sm:p-4 pt-0 sm:pt-0 w-full">
-        <ShimmerButton size="md" />
+        {/* Button shimmer */}
+        <div className="w-52">
+          <ShimmerButton size="md" />
+        </div>
       </div>
     </div>
   );
@@ -165,7 +256,7 @@ const OurCourses = () => {
   }, []);
 
   const handleNext = () => {
-    const limitedCourses = Math.min(courses.length, 8); // Limit to 8 courses
+    const limitedCourses = Math.min(courses.length, 6); // Limit to 6 courses
     if (isAnimating || limitedCourses <= visibleCards) return;
     setIsAnimating(true);
     const maxIndex = Math.max(0, limitedCourses - visibleCards);
@@ -173,7 +264,7 @@ const OurCourses = () => {
   };
 
   const handlePrev = () => {
-    const limitedCourses = Math.min(courses.length, 8); // Limit to 8 courses
+    const limitedCourses = Math.min(courses.length, 6); // Limit to 6 courses
     if (isAnimating || limitedCourses <= visibleCards) return;
     setIsAnimating(true);
     const maxIndex = Math.max(0, limitedCourses - visibleCards);
@@ -185,9 +276,9 @@ const OurCourses = () => {
     return () => clearTimeout(timer);
   }, [currentIndex]);
 
-  // Get only first 8 courses, and current visible ones in carousel
+  // Get only first 6 courses, and current visible ones in carousel
   const getCurrentCourses = () => {
-    const limitedCourses = courses.slice(0, 8); // Limit to first 8 courses
+    const limitedCourses = courses.slice(0, 6); // Limit to first 6 courses
     const startIndex = currentIndex;
     const endIndex = Math.min(startIndex + visibleCards, limitedCourses.length);
     return limitedCourses.slice(startIndex, endIndex);
@@ -207,7 +298,7 @@ const OurCourses = () => {
 
   return (
     <div
-      className="w-full relative">
+      className="w-full px-8 relative">
       {/* Full-width white header with dotted background */}
       <div className="w-full h-[140px] relative py-10 mb-12">
         {/* Dotted background pattern */}
@@ -235,7 +326,7 @@ const OurCourses = () => {
       </div>
 
       {/* Course content container with grid background */}
-      <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[100vw] mx-auto px-1 sm:px-4 pb-8 relative">
+      <div className="w-full max-w-[100vw] sm:max-w-[90vw] lg:max-w-[100vw] mx-auto px-1 sm:px-4 pb-8 relative">
         {/* Grid gradient overlay inside course content */}
         <div className="absolute inset-0 w-full h-full 
           [background-image:linear-gradient(to_right,#0001_1px,transparent_1px),linear-gradient(to_bottom,#0001_1px,transparent_1px)] 
@@ -249,8 +340,8 @@ const OurCourses = () => {
           {screenWidth < 850 && (
             <div className="relative w-full">
               <div
-                className="flex items-center justify-between w-full gap-2 sm:gap-4"
-                style={{ minHeight: "250px" }}
+                className="flex items-center justify-center w-full gap-2 sm:gap-4"
+                style={{ minHeight: "400px" }}
               >
                 {/* Show arrows only if there are more courses than visible cards */}
                 {courses.length > visibleCards && (
@@ -276,13 +367,13 @@ const OurCourses = () => {
                   </button>
                 )}
 
-                <div className="flex justify-center items-center flex-1 gap-4">
+                <div className="flex justify-center items-center flex-1 max-w-[320px]">
                   {loading ? (
-                    <CourseCardSkeleton />
+                    <CourseCardSkeleton isMobile={true} />
                   ) : (
                     <>
                       {getCurrentCourses().map((card) => (
-                        <CourseCard key={card.id} card={card} buttonColor={buttonColor} />
+                        <CourseCard key={card.id} card={card} buttonColor={buttonColor} isMobile={true} />
                       ))}
                     </>
                   )}
@@ -317,15 +408,15 @@ const OurCourses = () => {
 
           {/* ✅ Grid layout for screens 850px and above */}
           {screenWidth >= 850 && (
-            <div className="flex flex-wrap justify-center gap-6 mb-12 w-full">
+            <div className="grid grid-cols-1  justify-items-center xl:grid-cols-2 gap-6 mb-12 w-full max-w-7xl mx-auto">
               {loading ? (
                 <>
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
-                    <CourseCardSkeleton key={index} />
+                  {[1, 2, 3, 4, 5, 6].map((index) => (
+                    <CourseCardSkeleton key={index} isMobile={false} />
                   ))}
                 </>
               ) : (
-                courses.slice(0, 8).map((card) => <CourseCard key={card.id} card={card} buttonColor={buttonColor} />)
+                courses.slice(0, 6).map((card) => <CourseCard key={card.id} card={card} buttonColor={buttonColor} isMobile={false} />)
               )}
             </div>
           )}

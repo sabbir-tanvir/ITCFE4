@@ -95,7 +95,7 @@ const TrainerDetails = () => {
     return <div className="flex justify-center items-center min-h-screen">No details available</div>;
   }
   return (
-    <section className="container mx-auto px-4 py-8 mt-20">
+    <section className="container mx-auto px-4 py-8 mt-4">
       <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center">
         <img
           src={trainer.image || "/pfp.jpg"}

@@ -93,7 +93,7 @@ const Root = () => {
         style={{ backgroundColor: primaryColor }}
       />
 
-      <main className="lg:pt-40 pt-56 md:pt-40">
+      <main className="lg:pt-32 pt-32 md:pt-32">
         <Outlet></Outlet>
       </main>
       <Footer></Footer>

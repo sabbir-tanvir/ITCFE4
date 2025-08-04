@@ -148,7 +148,7 @@ const Course = () => {
   };
 
   return (
-    <div className="w-full px-4 py-8">
+    <div className="w-full px-4 mt-4 py-8">
       <h2 className="text-center text-black text-[32px] font-semibold mb-6">
         আমাদের কোর্স সমূহ
       </h2>

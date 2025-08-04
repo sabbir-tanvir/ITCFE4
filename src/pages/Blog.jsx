@@ -44,7 +44,7 @@ const Blog = () => {
   };
 
   return (
-    <div className="container px-6 mx-auto py-8 lg:px-18 md:px-6  xl:px-24">
+    <div className="container px-6 mx-auto py-8 lg:px-18 md:px-6 mt-4  xl:px-24">
       <h1 className="text-3xl font-bold text-center mb-8">Blog</h1>
       <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
         {posts.slice(0, visiblePosts).map((post) => {

@@ -1,15 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { fetchSiteSettings } from "../config/siteSettingsApi";
 import { CountUp } from 'countup.js';
-import icon1 from "../assets/Stats/1.png";
-import icon2 from "../assets/Stats/2.png";
-import icon3 from "../assets/Stats/3.png";
-import icon4 from "../assets/Stats/4.png";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { Api_Base_Url, Site_Id } from "../config/api";
 
 const Stats = () => {
   // Primary color for gradient background
-  const [primaryColor, setPrimaryColor] = useState('#FFF');
+  const [_primaryColor, setPrimaryColor] = useState('#FFF');
 
   // Fetch Primary color from site settings
   useEffect(() => {
@@ -23,7 +21,7 @@ const Stats = () => {
   }, []);
 
   // Helper: convert hex to rgba with alpha
-  function hexToRgba(hex, alpha = 0.15) {
+  function _hexToRgba(hex, alpha = 0.15) {
     let c = hex.replace('#', '');
     if (c.length === 3) {
       c = c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
@@ -159,9 +157,46 @@ const Stats = () => {
 
   if (loading) {
     return (
-      <section className="flex items-center justify-center min-h-[50vh] w-full bg-gradient-to-b from-[#FFF7F0] to-white px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-[1284px] py-12 px-4 sm:px-6 lg:px-8 mx-auto text-center">
-          <div className="text-lg font-medium text-gray-600">Loading stats...</div>
+      <section className="flex items-center justify-center bg-[#a6a7a31f] min-h-[30vh] w-full px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1284px] py-8 px-4 sm:px-6 lg:px-8 mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
+            {[...Array(4)].map((_, index) => (
+              <div
+                key={index}
+                className="flex flex-row items-center bg-white rounded-xl shadow-lg p-4 md:p-6 min-w-[240px] max-w-[320px] mx-auto animate-pulse"
+              >
+                <div className="flex items-center justify-center w-16 h-16 bg-[#FFF7F0] rounded-lg shadow-sm mr-4">
+                  <Skeleton
+                    width={34}
+                    height={34}
+                    baseColor="#e5e7eb"
+                    highlightColor="#f9fafb"
+                    duration={1.2}
+                    style={{ borderRadius: '6px' }}
+                  />
+                </div>
+                <div className="flex flex-col items-start justify-center flex-1">
+                  <Skeleton
+                    width="60%"
+                    height={32}
+                    baseColor="#e5e7eb"
+                    highlightColor="#f9fafb"
+                    className="mb-2"
+                    duration={1.2}
+                    style={{ borderRadius: '4px' }}
+                  />
+                  <Skeleton
+                    width="85%"
+                    height={20}
+                    baseColor="#e5e7eb"
+                    highlightColor="#f9fafb"
+                    duration={1.2}
+                    style={{ borderRadius: '4px' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     );
@@ -169,8 +204,8 @@ const Stats = () => {
 
   if (error) {
     return (
-      <section className="flex items-center justify-center min-h-[50vh] w-full bg-gradient-to-b from-[#FFF7F0] to-white px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-[1284px] py-12 px-4 sm:px-6 lg:px-8 mx-auto text-center">
+      <section className="flex items-center justify-center bg-[#a6a7a31f] min-h-[30vh] w-full px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1284px] py-8 px-4 sm:px-6 lg:px-8 mx-auto text-center">
           <div className="text-lg font-medium text-red-500">{error}</div>
         </div>
       </section>
@@ -233,8 +268,8 @@ const Stats = () => {
   // If no stats to show, return null or a message
   if (statsToShow.length === 0) {
     return (
-      <section className="flex items-center justify-center min-h-[50vh] w-full bg-gradient-to-b from-[#FFF7F0] to-white px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-[1284px] py-12 px-4 sm:px-6 lg:px-8 mx-auto text-center">
+      <section className="flex items-center justify-center bg-[#a6a7a31f] min-h-[30vh] w-full px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1284px] py-8 px-4 sm:px-6 lg:px-8 mx-auto text-center">
           <div className="text-lg font-medium text-gray-500">No statistics available at the moment.</div>
         </div>
       </section>

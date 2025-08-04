@@ -51,7 +51,7 @@ const Trainer = () => {
   }
 
   return (
-    <section className="relative w-full max-w-none px-8 sm:px-14  lg:px-24 justify-center lg:py-4 lg:mt-4">
+    <section className="relative w-full max-w-none px-8 sm:px-14 mt-10 lg:px-24 justify-center lg:py-4 lg:mt-6">
       {/* Background Pattern - Lower Left */}
       <div className="absolute bottom-10  opacity-20 pointer-events-none z-0">
         <div className="relative h-40 w-96 [&>div]:absolute [&>div]:h-full [&>div]:w-full [&>div]:bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [&>div]:[background-size:16px_16px] [&>div]:[mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]">

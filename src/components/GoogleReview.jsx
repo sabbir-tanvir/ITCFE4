@@ -379,23 +379,15 @@ const GoogleReview = ({ courseId, reviewsData }) => {
 
                 {/* User Info */}
                 <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                  {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName}
-                      className="w-14 h-14 md:w-16 md:h-16 rounded-full"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "path/to/default/avatar.png";
-                      }}
-                    />
-                  ) : (
-                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gray-300 flex items-center justify-center">
-                      <span className="text-xl font-semibold text-gray-600">
-                        {user.displayName?.charAt(0) || 'U'}
-                      </span>
-                    </div>
-                  )}
+                  <img
+                    src={user.photoURL || "/pfp.jpg"}
+                    alt={user.displayName}
+                    className="w-14 h-14 md:w-16 md:h-16 rounded-full shadow-md"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/pfp.jpg";
+                    }}
+                  />
                   <div className="inline-flex flex-col justify-start items-start gap-1">
                     <div className="text-zinc-900 text-lg md:text-xl font-semibold font-['Hind_Siliguri']">
                       {user.displayName}
@@ -477,13 +469,15 @@ const GoogleReview = ({ courseId, reviewsData }) => {
                   <div className="w-full flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                     {/* User Info and Rating */}
                     <div className="flex justify-start items-center gap-2 md:gap-3">
-                      {userImg && (
-                        <img
-                          src={userImg}
-                          alt={userName}
-                          className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover"
-                        />
-                      )}
+                      <img
+                        src={userImg || "/pfp.jpg"}
+                        alt={userName}
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover shadow-md"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/pfp.jpg";
+                        }}
+                      />
                       <div className="inline-flex flex-col justify-start items-start gap-1">
                         <div className="text-zinc-900 text-lg md:text-xl font-semibold font-['Hind_Siliguri']">
                           {userName}

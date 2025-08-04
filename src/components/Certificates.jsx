@@ -187,12 +187,10 @@ const Certificates = () => {
             onTouchMove={handleTouchMove}
           >
             {visibleCards.map((card, index) => {
-              // If there are 3 cards, lift the middle one
-              const isMiddle = visibleCards.length === 3 && index === 1;
               return (
                 <div
                   key={currentIndex + index}
-                  className={`w-56 p-6 bg-white rounded shadow-[0px_0px_5px_0px_rgba(0,0,0,0.10)] inline-flex flex-col justify-center items-start gap-3${isMiddle ? ' -mt-6' : ''}`}
+                  className="w-56 p-6 bg-white rounded shadow-[0px_0px_5px_0px_rgba(0,0,0,0.10)] inline-flex flex-col justify-center items-start gap-3"
                 >
                   <img
                     className="w-44 h-48"

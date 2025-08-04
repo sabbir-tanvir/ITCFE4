@@ -3,18 +3,18 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaYoutube, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { NavLink, useLocation } from "react-router-dom"; // Import useLocation
 import Button from "./Button";
-import logo from "../../assets/MainLogo/Logo.png"; // Use your actual logo path
+import _logo from "../../assets/MainLogo/Logo.png"; // Use your actual logo path
 import { fetchSiteSettings } from "../../config/siteSettingsApi";
 import { Api_Base_Url, Site_Id } from "../../config/api";
-import { ShimmerButton, ShimmerCircularImage, ShimmerText } from "react-shimmer-effects";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false); // State for desktop gallery dropdown
-  const [headerColor, setHeaderColor] = useState('#FFFF');
   const [buttonColor, setButtonColor] = useState('#FC5D43');
+  const [_headerFooterColor, setHeaderFooterColor] = useState('#ffffff'); // Default white
+  const [primaryColor, setPrimaryColor] = useState('#FC5D43'); // For top section background
+  const [secondaryColor, setSecondaryColor] = useState('#ffffff'); // For main navbar background
   const [isLoading, setIsLoading] = useState(true);
-  const [navbarHeight, setNavbarHeight] = useState(0);
 
   // Create refs for the dropdown elements
   const dropdownRef = useRef(null); // Used for mobile dropdown and potentially desktop gallery area
@@ -35,7 +35,6 @@ const Navbar = () => {
     const measureNavbarHeight = () => {
       if (navbarRef.current) {
         const height = navbarRef.current.offsetHeight;
-        setNavbarHeight(height);
         // Set CSS custom property for global use
         document.documentElement.style.setProperty('--navbar-height', `${height}px`);
       }
@@ -124,7 +123,9 @@ const Navbar = () => {
         if (settingsData) {
           setSiteSettings(settingsData);
           if (settingsData.button_color) setButtonColor(settingsData.button_color);
-          if (settingsData.header_footer_color) setHeaderColor(settingsData.header_footer_color);
+          if (settingsData.header_footer_color) setHeaderFooterColor(settingsData.header_footer_color);
+          if (settingsData.primary_color) setPrimaryColor(settingsData.primary_color);
+          if (settingsData.secondary_color) setSecondaryColor(settingsData.secondary_color);
         }
         // Handle social links data
         setSocialLinks(Array.isArray(socialData) ? socialData : []);
@@ -148,12 +149,23 @@ const Navbar = () => {
 
   // --- STYLE FUNCTIONS ---
 
-  // New navLinkStyle for shimmer version and desktop top-level items
   const navLinkStyle = ({ isActive, isHover }) => {
     return {
       className: isActive
-        ? "px-4 py-2 text-white bg-red-500 rounded text-lg font-medium"
-        : "text-black hover:bg-red-500 hover:text-white rounded px-4 py-2 text-lg font-medium transition-colors",
+        ? "px-2 py-1 text-white rounded-tl-[30px] rounded-bl-[30px] rounded-br-[30px] inline-flex justify-center items-center gap-2.5"
+        : "rounded-[12px] px-2 py-1",
+      style: isActive
+        ? { backgroundColor: buttonColor, color: '#fff' }
+        : isHover
+          ? { backgroundColor: getLightButtonColor(buttonColor), color: '#111' }
+          : { color: '#111' },
+    };
+  };
+  const navLinkStyle2 = ({ isActive, isHover }) => {
+    return {
+      className: isActive
+        ? "text-white rounded-[12px] px-2 py-1"
+        : "text-black rounded-[12px] px-2 py-1",
       style: isActive
         ? { backgroundColor: buttonColor, color: '#fff' }
         : isHover
@@ -162,19 +174,25 @@ const Navbar = () => {
     };
   };
 
-  // Style for mobile menu items and desktop dropdown items
-  const navLinkStyle2 = ({ isActive, isHover }) => {
-    return {
-      className: isActive
-        ? "text-white bg-red-500 rounded-[12px] px-2 py-1"
-        : "text-black hover:bg-red-500 hover:text-white rounded-[12px] px-2 py-1 ",
-      style: isActive
-        ? { backgroundColor: buttonColor, color: '#fff' }
-        : isHover
-          ? { backgroundColor: getLightButtonColor(buttonColor), color: '#111' }
-          : { color: '#111' },
-    };
+  const handleHamburgerClick = () => {
+    setIsDropdownOpen((prev) => !prev);
+    setIsGalleryOpen(false);
   };
+
+  const handleMenuItemClick = () => {
+    setIsDropdownOpen(false);
+    setIsGalleryOpen(false);
+  };
+
+  const handleGalleryClick = (e) => {
+    e.stopPropagation();
+    setIsGalleryOpen((prev) => !prev);
+  };
+
+  // Determine if any gallery sub-route is active
+  const isGalleryActive =
+    location.pathname === "/photoGallery" ||
+    location.pathname === "/videoGallery";
 
   // --- LOADING STATE ---
 
@@ -190,43 +208,88 @@ const Navbar = () => {
           right: 0,
           zIndex: 1000,
           width: '100%',
-          background: 'linear-gradient(to right, #f3f4f6, #e5e7eb)',
+          background: '#fff',
           boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         }}
       >
-        <div className="py-[6px] px-0 sm:px-4 md:px-[82px]">
-          <div className="navbar rounded-xl min-h-[60px]">
+        {/* Top section shimmer */}
+        <div className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] py-4" style={{ backgroundColor: '#FC5D43' }}>
+          {/* Mobile layout shimmer */}
+          <div className="block md:hidden">
+            {/* Description shimmer */}
+            <div className="text-center mb-2">
+              <div className="w-[250px] h-4 bg-gray-200 rounded animate-pulse mx-auto"></div>
+            </div>
+            {/* Phone/email and social icons shimmer */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-20 h-3 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4].map((index) => (
+                  <div key={index} className="w-7 h-7 bg-gray-200 rounded animate-pulse"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop layout shimmer */}
+          <div className="hidden md:grid grid-cols-3 gap-4 items-center">
+            {/* Left: Phone/email shimmer */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+            
+            {/* Center: Description shimmer */}
+            <div className="text-center">
+              <div className="w-[300px] h-4 bg-gray-200 rounded animate-pulse mx-auto"></div>
+            </div>
+            
+            {/* Right: Social icons shimmer */}
+            <div className="flex justify-end gap-2">
+              {[1, 2, 3, 4, 5].map((index) => (
+                <div key={index} className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main navbar shimmer */}
+        <div 
+          className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] min-h-[64px] relative"
+          style={{ backgroundColor: '#ffffff' }}
+        >
+          <div className="navbar rounded-xl">
             <div className="navbar-start">
               {/* Mobile menu button shimmer */}
               <div className="lg:hidden">
-                <div className="w-[32px] h-[32px]">
-                  <ShimmerButton size="sm" />
-                </div>
+                <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
               </div>
               {/* Logo shimmer */}
               <div className="text-lg md:text-xl flex items-center gap-2">
-                <span className="block sm:hidden"><ShimmerCircularImage size={20} /></span>
-                <span className="hidden sm:block"><ShimmerCircularImage size={30} /></span>
-                <div className="hidden sm:block w-[100px] h-[16px]">
-                  <ShimmerText line={1} gap={5} />
-                </div>
+                <div className="w-[56px] h-[56px] sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 bg-gray-200 rounded animate-pulse"></div>
+                <div className="hidden sm:block w-[120px] h-5 bg-gray-200 rounded animate-pulse"></div>
               </div>
             </div>
             <div className="navbar-center hidden lg:flex">
               {/* Desktop menu items shimmer */}
               <div className="menu menu-horizontal px-1 flex gap-4 xl:gap-8 font-nav">
                 {[1, 2, 3, 4, 5, 6].map((index) => (
-                  <div key={index} className="w-[50px] h-[14px]">
-                    <ShimmerText line={1} gap={5} />
-                  </div>
+                  <div key={index} className="w-[60px] h-4 bg-gray-200 rounded animate-pulse"></div>
                 ))}
               </div>
             </div>
             <div className="navbar-end">
               {/* Contact button shimmer */}
-              <div className="w-[80px] h-[32px]">
-                <ShimmerButton size="sm" />
-              </div>
+              <div className="w-[80px] h-10 bg-gray-200 rounded animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -260,28 +323,7 @@ const Navbar = () => {
     }
   ];
 
-  const handleHamburgerClick = () => {
-    setIsDropdownOpen((prev) => !prev);
-    // Ensure desktop gallery dropdown is closed when mobile menu opens
-    setIsGalleryOpen(false);
-  };
 
-  // Close both mobile and desktop dropdowns when a menu item is clicked
-  const handleMenuItemClick = () => {
-    setIsDropdownOpen(false);
-    setIsGalleryOpen(false);
-  };
-
-  // Toggle the desktop gallery dropdown
-  const handleGalleryClick = (e) => {
-    e.stopPropagation(); // Prevent event bubbling
-    setIsGalleryOpen((prev) => !prev);
-  };
-
-  // Determine if any gallery sub-route is active
-  const isGalleryActive =
-    location.pathname === "/photoGallery" ||
-    location.pathname === "/videoGallery";
 
   // --- RENDER ---
   return (
@@ -298,17 +340,14 @@ const Navbar = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
       }}
     >
-      <div className="pt-[2px]">
+      <div className="">
         {/* Company Information Section */}
-        <div className="bg-white py-1 px-2 sm:px-4 md:px-[40px] lg:px-[82px] border-b">
-          {/* Mobile layout: phone & tagline top, then logo/name/location left, social icons right */}
+        <div className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] py-4" style={{ backgroundColor: primaryColor }}>
+          {/* Mobile layout: short description on top, phone/email left, social icons right */}
           <div className="block md:hidden">
-            {/* First row: phone and tagline */}
-            <div className="flex flex-col items-center justify-center mb-2">
-              <div className="text-base font-semibold text-gray-800">
-                {siteSettings.phone || "01886666619"}
-              </div>
-              <div className="text-sm text-black text-center">
+            {/* First row: short description centered */}
+            <div className="text-center mb-2">
+              <div className="text-sm text-white">
                 {siteSettings.short_description ? (
                   <span dangerouslySetInnerHTML={{ __html: siteSettings.short_description }} />
                 ) : (
@@ -316,19 +355,37 @@ const Navbar = () => {
                 )}
               </div>
             </div>
-            {/* Second row: logo/name/location left, social icons right */}
-            <div className="flex items-center justify-between gap-2">
-              <NavLink to="/" className="flex items-center gap-2 cursor-pointer">
-                <img
-                  src={siteSettings.logo || logo}
-                  alt={siteSettings.name || "Amader Shikkha Logo"}
-                  className="w-14 h-14 object-contain" // Increased size for mobile
-                />
-                <div>
-                  <div className="text-blue-600 font-bold text-base">{siteSettings.name || "Amader Shikkha"}</div>
-                  <div className="text-xs text-gray-600">{siteSettings.address || "Bashundhara, Dhaka"}</div>
-                </div>
-              </NavLink>
+            {/* Second row: phone/email left, social icons right */}
+            <div className="flex px-4 items-center justify-between gap-2">
+              {/* Left: Phone and Email vertically stacked */}
+              <div className="flex flex-col gap-1">
+                {/* Phone with phone icon */}
+                <a href={`tel:${siteSettings.phone || "01886666619"}`} className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 24 25" fill="none">
+                    <path d="M15.5625 4.5H7.4375C6.09131 4.5 5 5.47683 5 6.68182V18.3182C5 19.5232 6.09131 20.5 7.4375 20.5H15.5625C16.9087 20.5 18 19.5232 18 18.3182V6.68182C18 5.47683 16.9087 4.5 15.5625 4.5Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9.875 17.5898H13.125H9.875Z" fill="#FC5D43"/>
+                    <path d="M9.875 17.5898H13.125" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <div className="text-white text-xs font-medium">
+                    {siteSettings.phone || "01886666619"}
+                  </div>
+                </a>
+                
+                {/* Email with email icon */}
+                {siteSettings.email && (
+                  <a href={`mailto:${siteSettings.email}`} className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 24 25" fill="none">
+                      <path d="M2 6.5L8.91302 10.417C11.4616 11.861 12.5384 11.861 15.087 10.417L22 6.5" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                      <path d="M2.01577 13.9756C2.08114 17.0412 2.11383 18.5739 3.24496 19.7094C4.37608 20.8448 5.95033 20.8843 9.09883 20.9634C11.0393 21.0122 12.9607 21.0122 14.9012 20.9634C18.0497 20.8843 19.6239 20.8448 20.7551 19.7094C21.8862 18.5739 21.9189 17.0412 21.9842 13.9756C22.0053 12.9899 22.0053 12.0101 21.9842 11.0244C21.9189 7.95886 21.8862 6.42609 20.7551 5.29066C19.6239 4.15523 18.0497 4.11568 14.9012 4.03657C12.9607 3.98781 11.0393 3.98781 9.09882 4.03656C5.95033 4.11566 4.37608 4.15521 3.24495 5.29065C2.11382 6.42608 2.08114 7.95885 2.01576 11.0244C1.99474 12.0101 1.99475 12.9899 2.01577 13.9756Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    </svg>
+                    <div className="text-white text-xs">
+                      {siteSettings.email}
+                    </div>
+                  </a>
+                )}
+              </div>
+              
+              {/* Right: Social Icons */}
               <div className="flex gap-1">
                 {socialMediaItems
                   .filter((item) => {
@@ -344,7 +401,7 @@ const Navbar = () => {
                         title={item.name}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`w-8 h-8 flex items-center justify-center ${item.color} rounded text-white ${item.hover} transition-colors cursor-pointer`}
+                        className={`w-7 h-7 flex items-center justify-center ${item.color} rounded text-white ${item.hover} transition-colors cursor-pointer`}
                       >
                         {item.icon}
                       </a>
@@ -356,34 +413,48 @@ const Navbar = () => {
                     href={`https://wa.me/${siteSettings.phone.replace(/[^\d]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-8 h-8 bg-green-600 text-white rounded flex items-center justify-center hover:bg-green-700 transition-colors"
+                    className="w-7 h-7 bg-green-600 text-white rounded flex items-center justify-center hover:bg-green-700 transition-colors"
                   >
-                    <FaWhatsapp size={14} />
+                    <FaWhatsapp size={12} />
                   </a>
                 )}
               </div>
             </div>
           </div>
-          {/* Desktop layout: unchanged */}
+          
+          {/* Desktop layout: phone/email left, description center, social icons right */}
           <div className="hidden md:grid grid-cols-3 gap-4 items-center">
-            {/* Left Column: Logo, Brand Name, Address */}
-            <NavLink to="/" className="flex items-center justify-center lg:justify-start gap-3 cursor-pointer">
-              <img
-                src={siteSettings.logo || logo}
-                alt={siteSettings.name || "Amader Shikkha Logo"}
-                className="w-12 h-12 md:w-16 md:h-16 object-contain"
-              />
-              <div>
-                <div className="text-blue-600 font-bold text-base sm:text-lg">{siteSettings.name || "Amader Shikkha"}</div>
-                <div className="text-xs sm:text-sm text-gray-600">{siteSettings.address || "Bashundhara, Dhaka"}</div>
-              </div>
-            </NavLink>
-            {/* Center Column: Phone Numbers and Description */}
+            {/* Left Column: Phone and Email with icons */}
+            <div className="flex items-center gap-4">
+              {/* Phone with phone icon */}
+              <a href={`tel:${siteSettings.phone || "01886666619"}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 24 25" fill="none">
+                  <path d="M15.5625 4.5H7.4375C6.09131 4.5 5 5.47683 5 6.68182V18.3182C5 19.5232 6.09131 20.5 7.4375 20.5H15.5625C16.9087 20.5 18 19.5232 18 18.3182V6.68182C18 5.47683 16.9087 4.5 15.5625 4.5Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9.875 17.5898H13.125H9.875Z" fill="#FC5D43"/>
+                  <path d="M9.875 17.5898H13.125" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <div className="text-white text-sm font-semibold">
+                  {siteSettings.phone || "01886666619"}
+                </div>
+              </a>
+              
+              {/* Email with email icon */}
+              {siteSettings.email && (
+                <a href={`mailto:${siteSettings.email}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 24 25" fill="none">
+                    <path d="M2 6.5L8.91302 10.417C11.4616 11.861 12.5384 11.861 15.087 10.417L22 6.5" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <path d="M2.01577 13.9756C2.08114 17.0412 2.11383 18.5739 3.24496 19.7094C4.37608 20.8448 5.95033 20.8843 9.09883 20.9634C11.0393 21.0122 12.9607 21.0122 14.9012 20.9634C18.0497 20.8843 19.6239 20.8448 20.7551 19.7094C21.8862 18.5739 21.9189 17.0412 21.9842 13.9756C22.0053 12.9899 22.0053 12.0101 21.9842 11.0244C21.9189 7.95886 21.8862 6.42609 20.7551 5.29066C19.6239 4.15523 18.0497 4.11568 14.9012 4.03657C12.9607 3.98781 11.0393 3.98781 9.09882 4.03656C5.95033 4.11566 4.37608 4.15521 3.24495 5.29065C2.11382 6.42608 2.08114 7.95885 2.01576 11.0244C1.99474 12.0101 1.99475 12.9899 2.01577 13.9756Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                  </svg>
+                  <div className="text-white text-sm">
+                    {siteSettings.email}
+                  </div>
+                </a>
+              )}
+            </div>
+            
+            {/* Center Column: Short Description */}
             <div className="text-center">
-              <div className="text-base sm:text-lg font-semibold text-gray-800 mb-1">
-                {siteSettings.phone || "01886666619"}
-              </div>
-              <div className="text-sm sm:text-base text-black">
+              <div className="text-sm sm:text-base text-white">
                 {siteSettings.short_description ? (
                   <span dangerouslySetInnerHTML={{ __html: siteSettings.short_description }} />
                 ) : (
@@ -391,8 +462,9 @@ const Navbar = () => {
                 )}
               </div>
             </div>
-            {/* Right Column: Social Media Icons - Dynamic from API */}
-            <div className="flex justify-center md:justify-end gap-1 sm:gap-2">
+            
+            {/* Right Column: Social Media Icons */}
+            <div className="flex justify-end gap-2">
               {socialMediaItems
                 .filter((item) => {
                   const link = socialLinks.find((l) => l.name === item.name);
@@ -430,194 +502,167 @@ const Navbar = () => {
         </div>
 
         {/* Main Navbar Area */}
-        <div className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] min-h-[64px] relative"
-          style={{
-            background: `linear-gradient(90deg, ${headerColor} 20%, ${headerColor}B3 30%, ${headerColor}1A 100%)`,
-          }}
+        <div 
+          className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] min-h-[64px] relative"
+          style={{ backgroundColor: secondaryColor }}
         >
-          {/* MOBILE ONLY: Hamburger Menu */}
-          <div className="lg:hidden">
-            <div className="flex items-center justify-between py-4 ">
-              <button
-                ref={hamburgerRef}
-                type="button"
-                className="text-white p-2 "
-                onClick={handleHamburgerClick}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+          <div className="navbar rounded-xl">
+            <div className="navbar-start">
+              <div className="lg:hidden">
+                <button
+                  type="button"
+                  ref={hamburgerRef}
+                  className="btn btn-ghost text-black"
+                  onClick={handleHamburgerClick}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h8m-8 6h16"
-                  />
-                </svg>
-              </button>
-              <NavLink to="/contact">
-                <Button className="rounded-[12px] text-sm px-4 py-2 "
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 6h16M4 12h8m-8 6h16"
+                    />
+                  </svg>
+                </button>
+                {isDropdownOpen && (
+                  <ul ref={dropdownRef} className="absolute left-4 mt-2 bg-base-100 rounded-box z-50 w-52 p-4 shadow grid gap-4 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                    <li>
+                      <NavLink to="/" {...navLinkStyle({ isActive: location.pathname === "/" })} onClick={handleMenuItemClick}>
+                        হোম
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/course" {...navLinkStyle({ isActive: location.pathname === "/course" })} onClick={handleMenuItemClick}>
+                        কোর্স
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/training" {...navLinkStyle({ isActive: location.pathname === "/training" })} onClick={handleMenuItemClick}>
+                        প্রশিক্ষক
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/games" {...navLinkStyle({ isActive: location.pathname === "/games" })} onClick={handleMenuItemClick}>
+                        গেমস
+                      </NavLink>
+                    </li>
+                    <li className="relative">
+                      <button
+                        type="button"
+                        className={`flex items-center gap-1 w-full px-2 py-1 text-left rounded-[12px] ${isGalleryActive ? "text-white" : "hover:text-black"}`}
+                        style={isGalleryActive ? { backgroundColor: buttonColor } : {}}
+                        onClick={handleGalleryClick}
+                      >
+                        গ্যালারী
+                        <RiArrowDropDownLine />
+                      </button>
+                      {isGalleryOpen && (
+                        <ul className="absolute left-0 top-full mt-1 w-auto bg-white rounded-box shadow z-50 p-2">
+                          <li>
+                            <NavLink
+                              {...navLinkStyle2({ isActive: location.pathname === "/photoGallery" })}
+                              to="/photoGallery"
+                              onClick={handleMenuItemClick}
+                            >
+                              ফটো গ্যালারী
+                            </NavLink>
+                          </li>
+                          <li className="mt-1">
+                            <NavLink
+                              {...navLinkStyle2({ isActive: location.pathname === "/videoGallery" })}
+                              to="/videoGallery"
+                              onClick={handleMenuItemClick}
+                            >
+                              ভিডিও গ্যালারী
+                            </NavLink>
+                          </li>
+                        </ul>
+                      )}
+                    </li>
+                    <li>
+                      <NavLink to="/blog" {...navLinkStyle({ isActive: location.pathname === "/blog" })} onClick={handleMenuItemClick}>
+                        ব্লগ
+                      </NavLink>
+                    </li>
+
+                  </ul>
+                )}
+              </div>
+              <NavLink to="/" className="btn btn-ghost text-lg md:text-xl flex items-center gap-2 px-0 text-black">
+                <img
+                  src={siteSettings.logo || ""}
+                  alt="Amader Shikkha Logo"
+                  className="w-[56px] h-[56px] p-0 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 object-contain"
+                />
+                <span className="hidden sm:inline">{siteSettings.name || "Amader Shikkha"}</span>
+              </NavLink>
+            </div>
+
+            <div className="navbar-center hidden lg:flex">
+              <ul className="menu menu-horizontal px-1 flex gap-4 xl:gap-8 font-nav">
+                <NavLink to="/" {...navLinkStyle({ isActive: location.pathname === "/" })}>
+                  হোম
+                </NavLink>
+                <NavLink to="/course" {...navLinkStyle({ isActive: location.pathname === "/course" })}>
+                  কোর্স
+                </NavLink>
+                <NavLink to="/training" {...navLinkStyle({ isActive: location.pathname === "/training" })}>
+                  প্রশিক্ষক
+                </NavLink>
+                <NavLink to="/games" {...navLinkStyle({ isActive: location.pathname === "/games" })}>
+                  গেমস
+                </NavLink>
+                <NavLink to="/blog" {...navLinkStyle({ isActive: location.pathname === "/blog" })}>
+                  ব্লগ
+                </NavLink>
+
+                <div className="dropdown dropdown-hover" ref={galleryButtonRef}>
+                  <label
+                    tabIndex={0}
+                    className={`flex items-center gap-1 cursor-pointer px-2 py-1 rounded-[12px] transition-colors duration-200 ${
+                      isGalleryActive 
+                        ? "text-white" 
+                        : "text-black hover:text-black"
+                    }`}
+                    style={isGalleryActive ? { backgroundColor: buttonColor } : {}}
+                  >
+                    গ্যালারী
+                    <RiArrowDropDownLine />
+                  </label>
+                  <ul
+                    tabIndex={0}
+                    className="menu menu-sm dropdown-content text-black rounded-box shadow mt-3 z-[1] w-36 bg-white p-2"
+                  >
+                    <li>
+                      <NavLink {...navLinkStyle2({ isActive: location.pathname === "/photoGallery" })} to="/photoGallery">
+                        ফটো গ্যালারী
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink {...navLinkStyle2({ isActive: location.pathname === "/videoGallery" })} to="/videoGallery">
+                        ভিডিও গ্যালারী
+                      </NavLink>
+                    </li>
+                  </ul>
+                </div>
+              </ul>
+            </div>
+
+            <div className="navbar-end">
+              <NavLink to="/contact" >
+                <Button className="rounded-[12px] text-sm md:text-base"
                   style={{ backgroundColor: buttonColor }}
                 >
                   যোগাযোগ
                 </Button>
               </NavLink>
             </div>
-          </div>
-
-          {/* MOBILE DROPDOWN */}
-          {isDropdownOpen && (
-            <ul ref={dropdownRef} className="lg:hidden absolute left-4 top-full mt-2 bg-white rounded-xl z-50 p-3 shadow-lg border border-gray-200 w-48 min-w-max">
-              <li className="py-1">
-                <NavLink to="/" className={navLinkStyle2({ isActive: location.pathname === "/" }).className} style={navLinkStyle2({ isActive: location.pathname === "/" }).style} onClick={handleMenuItemClick}>
-                  হোম
-                </NavLink>
-              </li>
-              <li className="py-1">
-                <NavLink to="/course" className={navLinkStyle2({ isActive: location.pathname === "/course" }).className} style={navLinkStyle2({ isActive: location.pathname === "/course" }).style} onClick={handleMenuItemClick}>
-                  কোর্স
-                </NavLink>
-              </li>
-              <li className="py-1">
-                <NavLink to="/training" className={navLinkStyle2({ isActive: location.pathname === "/training" }).className} style={navLinkStyle2({ isActive: location.pathname === "/training" }).style} onClick={handleMenuItemClick}>
-                  প্রশিক্ষক
-                </NavLink>
-              </li>
-              <li className="py-1">
-                <NavLink to="/games" className={navLinkStyle2({ isActive: location.pathname === "/games" }).className} style={navLinkStyle2({ isActive: location.pathname === "/games" }).style} onClick={handleMenuItemClick}>
-                  গেমস
-                </NavLink>
-              </li>
-              <li className="py-1 relative">
-                <button
-                  type="button"
-                  className={`flex items-center gap-1 w-full px-2 py-1 text-left rounded-[12px] ${isGalleryActive
-                    ? "text-white bg-red-500"
-                    : "hover:bg-red-500 hover:text-white"
-                    }`}
-                  style={isGalleryActive ? { backgroundColor: buttonColor } : {}}
-                  onClick={handleGalleryClick}
-                >
-                  গ্যালারী
-                  <RiArrowDropDownLine />
-                </button>
-                {isGalleryOpen && ( // Use isGalleryOpen for mobile dropdown as well
-                  <ul className="absolute left-0  mt-4 w-auto bg-white rounded-box shadow z-50 p-4">
-                    <li>
-                      <NavLink
-                        className={navLinkStyle2({ isActive: location.pathname === "/photoGallery" }).className}
-                        style={navLinkStyle2({ isActive: location.pathname === "/photoGallery" }).style}
-                        to="/photoGallery"
-                        onClick={handleMenuItemClick}
-                      >
-                        ফটো গ্যালারী
-                      </NavLink>
-                    </li>
-                    <li className="mt-2">
-                      <NavLink
-                        className={navLinkStyle2({ isActive: location.pathname === "/videoGallery" }).className}
-                        style={navLinkStyle2({ isActive: location.pathname === "/videoGallery" }).style}
-                        to="/videoGallery"
-                        onClick={handleMenuItemClick}
-                      >
-                        ভিডিও গ্যালারী
-                      </NavLink>
-                    </li>
-                  </ul>
-                )}
-              </li>
-              <li className="py-1">
-                <NavLink to="/blog" className={navLinkStyle2({ isActive: location.pathname === "/blog" }).className} style={navLinkStyle2({ isActive: location.pathname === "/blog" }).style} onClick={handleMenuItemClick}>
-                  ব্লগ
-                </NavLink>
-              </li>
-            </ul>
-          )}
-
-          {/* DESKTOP ONLY: Full Menu */}
-          <div className="hidden lg:flex items-center justify-between py-4 ">
-            {/* LEFT: Menu Items */}
-            <ul className="flex gap-6 items-center">
-              <li>
-                <NavLink to="/" className={navLinkStyle({ isActive: location.pathname === "/" }).className} style={navLinkStyle({ isActive: location.pathname === "/" }).style}>
-                  হোম
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/course" className={navLinkStyle({ isActive: location.pathname === "/course" }).className} style={navLinkStyle({ isActive: location.pathname === "/course" }).style}>
-                  কোর্স
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/training" className={navLinkStyle({ isActive: location.pathname === "/training" }).className} style={navLinkStyle({ isActive: location.pathname === "/training" }).style}>
-                  প্রশিক্ষক
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/games" className={navLinkStyle({ isActive: location.pathname === "/games" }).className} style={navLinkStyle({ isActive: location.pathname === "/games" }).style}>
-                  গেমস
-                </NavLink>
-              </li>
-
-              {/* Desktop Gallery Item - Modified for State Control */}
-              <li className="relative" ref={dropdownRef}>
-                <button
-                  ref={galleryButtonRef}
-                  type="button"
-                  className={`flex items-center gap-1 px-4 py-2 rounded transition-colors duration-200 text-lg font-medium ${isGalleryActive || isGalleryOpen ? "text-white" : "text-black hover:bg-red-500 hover:text-white"}`}
-                  style={isGalleryActive || isGalleryOpen ? { backgroundColor: buttonColor } : {}}
-                  onClick={handleGalleryClick} // Toggle on click
-                >
-                  গ্যালারী
-                  <RiArrowDropDownLine className={`${isGalleryOpen ? 'rotate-180' : ''} transition-transform`} />
-                </button>
-
-                {/* Submenu - Controlled by isGalleryOpen state, not hover */}
-                {isGalleryOpen && (
-                  <ul className="absolute left-0 top-full mt-2 min-w-max bg-white rounded-box shadow z-50 p-2 gap-1 whitespace-nowrap">
-                    <li>
-                      <NavLink
-                        className={navLinkStyle2({ isActive: location.pathname === "/photoGallery" }).className}
-                        style={navLinkStyle2({ isActive: location.pathname === "/photoGallery" }).style}
-                        to="/photoGallery"
-                        onClick={handleMenuItemClick} // Close dropdown on item click
-                      >
-                        ফটো গ্যালারী
-                      </NavLink>
-                    </li>
-                    <li className="mt-2">
-                      <NavLink
-                        className={navLinkStyle2({ isActive: location.pathname === "/videoGallery" }).className}
-                        style={navLinkStyle2({ isActive: location.pathname === "/videoGallery" }).style}
-                        to="/videoGallery"
-                        onClick={handleMenuItemClick} // Close dropdown on item click
-                      >
-                        ভিডিও গ্যালারী
-                      </NavLink>
-                    </li>
-                  </ul>
-                )}
-              </li>
-
-              <li>
-                <NavLink className={navLinkStyle({ isActive: location.pathname === "/blog" }).className} style={navLinkStyle({ isActive: location.pathname === "/blog" }).style} to="/blog">
-                  ব্লগ
-                </NavLink>
-              </li>
-            </ul>
-
-            {/* RIGHT: Contact Button */}
-            <NavLink to="/contact">
-              <Button className="rounded-[12px] text-base px-4 py-2"
-                style={{ backgroundColor: buttonColor }}
-              >
-                যোগাযোগ
-              </Button>
-            </NavLink>
           </div>
         </div>
       </div>
@@ -626,3 +671,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

@@ -130,9 +130,21 @@ const Review = () => {
                   alt={review.name || review.student_name || review.user_name}
                   className="object-cover rounded-full"
                   style={{width:'44px',height:'44px'}}
+                  onError={(e) => {
+                    e.target.src = '/pfp.jpg';
+                  }}
                 />
               ) : (
-                <span className="text-xs font-medium text-gray-700">{(review.name || review.student_name || review.user_name)[0]}</span>
+                <img
+                  src="/pfp.jpg"
+                  alt={review.name || review.student_name || review.user_name}
+                  className="object-cover rounded-full"
+                  style={{width:'44px',height:'44px'}}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = `<span class="text-xs font-medium text-gray-700">${(review.name || review.student_name || review.user_name)[0]}</span>`;
+                  }}
+                />
               )}
             </div>
             <div className="flex flex-col justify-start items-start gap-0.5 w-full">
@@ -141,7 +153,7 @@ const Review = () => {
               </p>
               {/* Course name in one line with ellipsis */}
               {(review.course_name || review.batch || review.position) && (
-                <p className="text-zinc-600 text-xs font-normal truncate w-full" style={{maxWidth:'180px'}} title={review.course_name || review.batch || review.position}>
+                <p className="text-zinc-600 text-xs text-start font-normal truncate w-full" style={{maxWidth:'180px'}} title={review.course_name || review.batch || review.position}>
                   {review.course_name || review.batch || review.position}
                 </p>
               )}

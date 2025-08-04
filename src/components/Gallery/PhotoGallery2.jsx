@@ -74,7 +74,7 @@ const PhotoGallery2 = () => {
 
     return (
       <div
-        className="fixed inset-0 z-50 bg-black bg-opacity-75"
+        className="fixed pt-[30vh] inset-0 z-50 bg-black bg-opacity-75"
         onClick={onClose}
       >
         <button
@@ -104,15 +104,15 @@ const PhotoGallery2 = () => {
         </button>
 
         <div
-          className="absolute bg-white rounded-xl shadow-2xl p-2 w-[90vw] max-w-[800px] h-[80vh] max-h-[600px] transition-all duration-300 ease-out animate-rise"
+          className="absolute bg-white rounded-xl shadow-2xl p-2 w-[90vw] max-w-[800px] h-[75vh] max-h-[600px] transition-all duration-300 ease-out animate-rise"
           style={{
             left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
+            top: "60vh",
+            transform: "translate(-50%, 0)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="relative w-full h-full">
+          <div className="relative  w-full h-full">
             <img
               src={imgUrl}
               alt={img.title || ""}

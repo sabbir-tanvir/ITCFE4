@@ -292,7 +292,7 @@ const AdmissionForm = () => {
 
 
   return (
-    <div className="max-w-[1440px] mx-auto p-6 mt-[40px] mb-[80px] bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border border-gray-100">
+    <div className="max-w-[1440px] mx-auto p-6  mt-[40px] mb-[80px] bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl border border-gray-100">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-2 font-['Hind_Siliguri']">
           এডমিশন ফর্ম

@@ -213,22 +213,22 @@ const Navbar = () => {
         }}
       >
         {/* Top section shimmer */}
-        <div className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] py-4" style={{ backgroundColor: '#FC5D43' }}>
+        <div className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] py-4" style={{ backgroundColor: '#ffffff' }}>
           {/* Mobile layout shimmer */}
           <div className="block md:hidden">
             {/* Description shimmer */}
             <div className="text-center mb-2">
-              <div className="w-[250px] h-4 bg-gray-200 rounded animate-pulse mx-auto"></div>
+              <div className="w-[250px] h-4 bg-gray-300 rounded animate-pulse mx-auto"></div>
             </div>
             {/* Phone/email and social icons shimmer */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
-                <div className="w-20 h-3 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-4 h-4 bg-gray-300 rounded animate-pulse"></div>
+                <div className="w-20 h-3 bg-gray-300 rounded animate-pulse"></div>
               </div>
               <div className="flex gap-1">
                 {[1, 2, 3, 4].map((index) => (
-                  <div key={index} className="w-7 h-7 bg-gray-200 rounded animate-pulse"></div>
+                  <div key={index} className="w-7 h-7 bg-gray-300 rounded animate-pulse"></div>
                 ))}
               </div>
             </div>
@@ -239,24 +239,24 @@ const Navbar = () => {
             {/* Left: Phone/email shimmer */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
-                <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-5 h-5 bg-gray-300 rounded animate-pulse"></div>
+                <div className="w-24 h-4 bg-gray-300 rounded animate-pulse"></div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
-                <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-5 h-5 bg-gray-300 rounded animate-pulse"></div>
+                <div className="w-32 h-4 bg-gray-300 rounded animate-pulse"></div>
               </div>
             </div>
             
             {/* Center: Description shimmer */}
             <div className="text-center">
-              <div className="w-[300px] h-4 bg-gray-200 rounded animate-pulse mx-auto"></div>
+              <div className="w-[300px] h-4 bg-gray-300 rounded animate-pulse mx-auto"></div>
             </div>
             
             {/* Right: Social icons shimmer */}
             <div className="flex justify-end gap-2">
               {[1, 2, 3, 4, 5].map((index) => (
-                <div key={index} className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+                <div key={index} className="w-8 h-8 bg-gray-300 rounded animate-pulse"></div>
               ))}
             </div>
           </div>
@@ -271,25 +271,25 @@ const Navbar = () => {
             <div className="navbar-start">
               {/* Mobile menu button shimmer */}
               <div className="lg:hidden">
-                <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-8 h-8 bg-gray-300 rounded animate-pulse"></div>
               </div>
               {/* Logo shimmer */}
               <div className="text-lg md:text-xl flex items-center gap-2">
-                <div className="w-[56px] h-[56px] sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 bg-gray-200 rounded animate-pulse"></div>
-                <div className="hidden sm:block w-[120px] h-5 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-[56px] h-[56px] sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 bg-gray-300 rounded animate-pulse"></div>
+                <div className="hidden sm:block w-[120px] h-5 bg-gray-300 rounded animate-pulse"></div>
               </div>
             </div>
             <div className="navbar-center hidden lg:flex">
               {/* Desktop menu items shimmer */}
               <div className="menu menu-horizontal px-1 flex gap-4 xl:gap-8 font-nav">
                 {[1, 2, 3, 4, 5, 6].map((index) => (
-                  <div key={index} className="w-[60px] h-4 bg-gray-200 rounded animate-pulse"></div>
+                  <div key={index} className="w-[60px] h-4 bg-gray-300 rounded animate-pulse"></div>
                 ))}
               </div>
             </div>
             <div className="navbar-end">
               {/* Contact button shimmer */}
-              <div className="w-[80px] h-10 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-[80px] h-10 bg-gray-300 rounded animate-pulse"></div>
             </div>
           </div>
         </div>

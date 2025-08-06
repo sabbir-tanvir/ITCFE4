@@ -62,49 +62,41 @@ export default function Footer() {
   // Show shimmer while loading footer data
   if (isLoading) {
     return (
-      <div className="w-full px-4 md:px-8 lg:px-20 pt-10 pb-6 bg-gray-800 rounded-tl-3xl rounded-tr-3xl flex flex-col gap-6">
+      <div className="w-full px-4 md:px-8 lg:px-20 pt-10 pb-6 bg-white rounded-tl-3xl rounded-tr-3xl flex flex-col gap-6">
         <div className={mainGridClass}>
           {/* Logo & Description shimmer */}
           <div className="flex flex-col gap-3">
             <div className="inline-flex justify-start items-center gap-2">
               {/* Logo shimmer */}
-              <ShimmerCircularImage size={48} />
+              <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
               {/* Company name shimmer */}
-              <div className="w-[150px]">
-                <ShimmerText line={1} gap={10} />
-              </div>
+              <div className="w-[150px] h-6 bg-gray-200 rounded animate-pulse"></div>
             </div>
             {/* Description shimmer */}
             <div className="space-y-2">
-              <ShimmerText line={3} gap={10} />
+              <div className="w-full h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-4/5 h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-3/5 h-4 bg-gray-200 rounded animate-pulse"></div>
             </div>
           </div>
 
           {/* Navigation Links shimmer */}
           <div className="flex flex-col gap-3">
             {/* Section title shimmer */}
-            <div className="w-[100px]">
-              <ShimmerText line={1} gap={10} />
-            </div>
+            <div className="w-[100px] h-5 bg-gray-200 rounded animate-pulse"></div>
             {/* Links shimmer */}
             {[1, 2, 3].map((index) => (
-              <div key={index} className="w-[80px]">
-                <ShimmerText line={1} gap={10} />
-              </div>
+              <div key={index} className="w-[80px] h-4 bg-gray-200 rounded animate-pulse"></div>
             ))}
           </div>
 
           {/* Important Links shimmer */}
           <div className="flex flex-col gap-3">
             {/* Section title shimmer */}
-            <div className="w-[120px]">
-              <ShimmerText line={1} gap={10} />
-            </div>
+            <div className="w-[120px] h-5 bg-gray-200 rounded animate-pulse"></div>
             {/* Links shimmer */}
             {[1, 2, 3, 4, 5].map((index) => (
-              <div key={index} className="w-[180px]">
-                <ShimmerText line={1} gap={10} />
-              </div>
+              <div key={index} className="w-[180px] h-4 bg-gray-200 rounded animate-pulse"></div>
             ))}
           </div>
 
@@ -112,25 +104,19 @@ export default function Footer() {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-1">
               {/* Contact title shimmer */}
-              <div className="w-[80px]">
-                <ShimmerText line={1} gap={10} />
-              </div>
+              <div className="w-[80px] h-5 bg-gray-200 rounded animate-pulse"></div>
               {/* Contact info shimmer */}
               {[1, 2, 3].map((index) => (
-                <div key={index} className="w-[90%]">
-                  <ShimmerText line={1} gap={10} />
-                </div>
+                <div key={index} className="w-[90%] h-4 bg-gray-200 rounded animate-pulse"></div>
               ))}
             </div>
             <div className="flex flex-col gap-3">
               {/* Follow title shimmer */}
-              <div className="w-[100px]">
-                <ShimmerText line={1} gap={10} />
-              </div>
+              <div className="w-[100px] h-5 bg-gray-200 rounded animate-pulse"></div>
               {/* Social icons shimmer */}
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+              <div className="flex flex-wrap gap-2">
                 {[1, 2, 3, 4, 5, 6].map((index) => (
-                  <ShimmerCircularImage key={index} size={32} />
+                  <div key={index} className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
                 ))}
               </div>
             </div>
@@ -139,15 +125,11 @@ export default function Footer() {
 
         <div className="flex flex-col gap-6">
           {/* Divider */}
-          <div className="w-full h-px bg-gray-600"></div>
+          <div className="w-full h-px bg-gray-200 animate-pulse"></div>
           <div className="grid grid-cols-1 gap-2 text-center">
             {/* Footer text shimmer */}
-            <div className="mx-auto w-[300px]">
-              <ShimmerText line={1} gap={10} />
-            </div>
-            <div className="mx-auto w-[250px]">
-              <ShimmerText line={1} gap={10} />
-            </div>
+            <div className="mx-auto w-[300px] h-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="mx-auto w-[250px] h-4 bg-gray-200 rounded animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -277,7 +259,7 @@ export default function Footer() {
               ঠিকানা: {settings?.address || "Bashundhara, Dhaka"}
             </div>
           </div>
-          {/* <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3">
             <div className={followTitleClass}>ফলো করুন</div>
             <div className="flex flex-wrap gap-2">
               {[
@@ -338,7 +320,7 @@ export default function Footer() {
                   );
                 })}
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
 

@@ -11,6 +11,8 @@ import { fetchSiteSettings } from "../config/siteSettingsApi";
 const Root = () => {
   const [primaryColor, setPrimaryColor] = useState('#FC5D43');
   const [scrollThreshold, setScrollThreshold] = useState(window.innerHeight * 3); // 200vh
+    const [isLoading, setIsLoading] = useState(true);
+
 
   // Update scroll threshold on window resize
   useEffect(() => {
@@ -21,7 +23,6 @@ const Root = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
   // Fetch button color from site settings
   useEffect(() => {
     fetchSiteSettings()
@@ -29,8 +30,11 @@ const Root = () => {
         if (data && data.primary_color) {
           setPrimaryColor(data.primary_color);
         }
+        setIsLoading(false);
       })
-      .catch(() => { });
+      .catch(() => { 
+        setIsLoading(false);
+      });
   }, []);
 
 
@@ -85,13 +89,19 @@ const Root = () => {
       <ScrollToTopComponent />
       <SpecialDeal />
       <Navbar />
-      <ScrollToTop
-        smooth
-        top={scrollThreshold}
-        component={<FaArrowUp className="text-white" />}
-        className=" !rounded-full !w-12 !h-12 !flex !items-center !justify-center !shadow-md !animate-bounce !z-[9999]"
-        style={{ backgroundColor: primaryColor }}
-      />
+      {isLoading ? (
+        <div className="fixed bottom-6 right-6 z-[9999]">
+          <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse"></div>
+        </div>
+      ) : (
+        <ScrollToTop
+          smooth
+          top={scrollThreshold}
+          component={<FaArrowUp className="text-white" />}
+          className=" !rounded-full !w-12 !h-12 !flex !items-center !justify-center !shadow-md !animate-bounce !z-[9999]"
+          style={{ backgroundColor: primaryColor }}
+        />
+      )}
 
       <main className="lg:pt-32 pt-32 md:pt-32">
         <Outlet></Outlet>

@@ -56,7 +56,6 @@ export const router = createBrowserRouter([
             }
             
             const courseData = await response.json();
-            console.log("Course details from API:", courseData);
 
             // Always fetch reviews for the course
             try {
@@ -68,7 +67,6 @@ export const router = createBrowserRouter([
               if (reviewsResponse.ok) {
                 const reviewsData = await reviewsResponse.json();
                 courseData.reviews = reviewsData;
-                console.log("Reviews data fetched for course", courseData.id, reviewsData);
               } else {
                 console.warn("Failed to fetch reviews for course", courseData.id, reviewsResponse.status);
               }
@@ -88,7 +86,6 @@ export const router = createBrowserRouter([
                 if (instructorResponse.ok) {
                   const instructorData = await instructorResponse.json();
                   courseData.instructor = instructorData;
-                  console.log("Instructor data fetched:", instructorData);
                 }
               } catch (instructorError) {
                 console.error("Error fetching instructor:", instructorError);

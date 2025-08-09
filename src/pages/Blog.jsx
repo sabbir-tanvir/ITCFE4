@@ -7,7 +7,6 @@ const POSTS_PER_PAGE = 3;
 const Blog = () => {
   const data = useLoaderData();
   const posts = data.results || [];
-  console.log("Blog Posts Data:", posts);
   
 
   const [visiblePosts, setVisiblePosts] = useState(POSTS_PER_PAGE);

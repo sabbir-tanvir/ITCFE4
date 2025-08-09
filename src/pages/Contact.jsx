@@ -8,6 +8,7 @@ const Contact = () => {
   const [buttonColor, setButtonColor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#FFFFFF');
+  const [sending, setSending] = useState(false);
 
 
   useEffect(() => {
@@ -80,15 +81,37 @@ const Contact = () => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
+    if (sending) return; // prevent double submit
+    setSending(true);
     setResult("পাঠানো হচ্ছে...");
     const formData = new FormData(event.target);
 
-    formData.append("access_key", "YOUR_ACCESS_KEY_HERE");
+    // Determine access key from site settings
+    const dynamicAccessKey = settings?.contact_form_api_key;
+    if (!dynamicAccessKey) {
+      setResult("কনট্যাক্ট ফর্ম API Key কনফিগার করা নেই");
+      setSending(false);
+      return;
+    }
+
+    // Append required Web3Forms fields
+    formData.append("access_key", dynamicAccessKey);
+
+    // Provide a consistent subject if user leaves blank
+    if (!formData.get('subject')) {
+      formData.set('subject', 'নতুন যোগাযোগ বার্তা');
+    }
+
+    // Additional metadata (optional)
+    formData.append('from_name', settings?.site_title || 'Website Visitor');
+    formData.append('replyto', formData.get('email'));
+    formData.append('redirect', ''); // stay on page
 
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         body: formData,
+        headers: { 'Accept': 'application/json' }
       });
 
       const data = await response.json();
@@ -97,12 +120,13 @@ const Contact = () => {
         setResult("ম্যাসেজ সফলভাবে পাঠানো হয়েছে");
         event.target.reset();
       } else {
-
-        setResult(data.message);
+        setResult(data.message || "সমস্যা হয়েছে, পরে আবার চেষ্টা করুন");
       }
     } catch (error) {
       console.error("Submission error:", error);
       setResult("ম্যাসেজ পাঠাতে সমস্যা হয়েছে, পরে আবার চেষ্টা করুন");
+    } finally {
+      setSending(false);
     }
   };
 
@@ -195,7 +219,10 @@ const Contact = () => {
           <form
             onSubmit={onSubmit}
             className="bg-gray-100 p-4 sm:p-6 rounded-lg"
+            autoComplete="off"
           >
+            {/* Honeypot field for spam bots */}
+            <input type="checkbox" name="botcheck" className="hidden" tabIndex="-1" autoComplete="off" />
             <div className="mb-4">
               <label
                 htmlFor="name"
@@ -266,10 +293,11 @@ const Contact = () => {
             </div>
             <button
               type="submit"
-              className="w-full text-white py-2 px-4 text-sm sm:text-base rounded-md hover:opacity-90 transition duration-300"
+              disabled={sending}
+              className={`w-full text-white py-2 px-4 text-sm sm:text-base rounded-md transition duration-300 ${sending ? 'opacity-70 cursor-not-allowed' : 'hover:opacity-90'}`}
               style={{ backgroundColor: buttonColor || '#FC5D43' }}
             >
-              পাঠিয়ে দিন
+              {sending ? 'পাঠানো হচ্ছে...' : 'পাঠিয়ে দিন'}
             </button>
             {result && (
               <p

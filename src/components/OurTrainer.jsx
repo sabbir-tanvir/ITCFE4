@@ -421,10 +421,11 @@ const OurTrainer = () => {
                 {/* Slider Track */}
                 <div className="flex-1 overflow-hidden">
                   <div
-                    className="flex transition-transform duration-300 ease-in-out"
+                    className={`flex transition-transform duration-300 ease-in-out ${trainers.length <= visibleTrainers ? 'justify-center' : ''}`}
                     style={{
-                      transform: getTransformValue(),
+                      transform: trainers.length <= visibleTrainers ? 'none' : getTransformValue(),
                       width:
+                        trainers.length <= visibleTrainers ? '100%' :
                         screenWidth < 768
                           ? `${trainers.length * (CARD_WIDTH_SM + CARD_GAP)}px`
                           : `${trainers.length * (CARD_WIDTH_MD + CARD_GAP)}px`,

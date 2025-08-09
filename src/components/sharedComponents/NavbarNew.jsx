@@ -10,6 +10,8 @@ import { Api_Base_Url, Site_Id } from "../../config/api";
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false); // State for desktop gallery dropdown
+  // Mobile gallery submenu positioning
+  const [mobileGalleryPos, setMobileGalleryPos] = useState({ top: 0, left: 0, bottom: 0, width: 0 });
   const [buttonColor, setButtonColor] = useState('#FC5D43');
   const [_headerFooterColor, setHeaderFooterColor] = useState('#ffffff'); // Default white
   const [primaryColor, setPrimaryColor] = useState('#FC5D43'); // For top section background
@@ -20,6 +22,8 @@ const Navbar = () => {
   const dropdownRef = useRef(null); // Used for mobile dropdown and potentially desktop gallery area
   const hamburgerRef = useRef(null);
   const galleryButtonRef = useRef(null); // Ref for the desktop gallery button
+  const mobileGalleryButtonRef = useRef(null); // Ref for mobile gallery button
+  const mobileGalleryMenuRef = useRef(null); // Ref for mobile gallery submenu (outside main dropdown)
   const navbarRef = useRef(null); // Ref for the navbar to measure its height
 
   const location = useLocation(); // Get current location
@@ -78,8 +82,16 @@ const Navbar = () => {
           galleryButtonRef.current &&
           galleryButtonRef.current.contains(event.target);
 
-        if (!isClickOnGalleryButton) {
-           setIsGalleryOpen(false);
+        // Also account for mobile gallery button & submenu
+        const isClickOnMobileGalleryButton =
+          mobileGalleryButtonRef.current &&
+          mobileGalleryButtonRef.current.contains(event.target);
+        const isClickInsideMobileGalleryMenu =
+          mobileGalleryMenuRef.current &&
+          mobileGalleryMenuRef.current.contains(event.target);
+
+        if (!isClickOnGalleryButton && !isClickOnMobileGalleryButton && !isClickInsideMobileGalleryMenu) {
+          setIsGalleryOpen(false);
         }
       }
     };
@@ -186,7 +198,15 @@ const Navbar = () => {
 
   const handleGalleryClick = (e) => {
     e.stopPropagation();
-    setIsGalleryOpen((prev) => !prev);
+    setIsGalleryOpen((prev) => {
+      const next = !prev;
+      // If opening on mobile, compute position so submenu can render outside main dropdown
+      if (next && window.innerWidth < 1024 && mobileGalleryButtonRef.current) { // tailwind lg breakpoint 1024px
+        const rect = mobileGalleryButtonRef.current.getBoundingClientRect();
+        setMobileGalleryPos({ top: rect.top, left: rect.left, bottom: rect.bottom, width: rect.width });
+      }
+      return next;
+    });
   };
 
   // Determine if any gallery sub-route is active
@@ -233,7 +253,7 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Desktop layout shimmer */}
           <div className="hidden md:grid grid-cols-3 gap-4 items-center">
             {/* Left: Phone/email shimmer */}
@@ -247,12 +267,12 @@ const Navbar = () => {
                 <div className="w-32 h-4 bg-gray-300 rounded animate-pulse"></div>
               </div>
             </div>
-            
+
             {/* Center: Description shimmer */}
             <div className="text-center">
               <div className="w-[300px] h-4 bg-gray-300 rounded animate-pulse mx-auto"></div>
             </div>
-            
+
             {/* Right: Social icons shimmer */}
             <div className="flex justify-end gap-2">
               {[1, 2, 3, 4, 5].map((index) => (
@@ -263,7 +283,7 @@ const Navbar = () => {
         </div>
 
         {/* Main navbar shimmer */}
-        <div 
+        <div
           className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] min-h-[64px] relative"
           style={{ backgroundColor: '#ffffff' }}
         >
@@ -362,21 +382,21 @@ const Navbar = () => {
                 {/* Phone with phone icon */}
                 <a href={`tel:${siteSettings.phone || "01886666619"}`} className="flex items-center gap-1 hover:opacity-80 transition-opacity">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 24 25" fill="none">
-                    <path d="M15.5625 4.5H7.4375C6.09131 4.5 5 5.47683 5 6.68182V18.3182C5 19.5232 6.09131 20.5 7.4375 20.5H15.5625C16.9087 20.5 18 19.5232 18 18.3182V6.68182C18 5.47683 16.9087 4.5 15.5625 4.5Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M9.875 17.5898H13.125H9.875Z" fill="#FC5D43"/>
-                    <path d="M9.875 17.5898H13.125" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15.5625 4.5H7.4375C6.09131 4.5 5 5.47683 5 6.68182V18.3182C5 19.5232 6.09131 20.5 7.4375 20.5H15.5625C16.9087 20.5 18 19.5232 18 18.3182V6.68182C18 5.47683 16.9087 4.5 15.5625 4.5Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M9.875 17.5898H13.125H9.875Z" fill="#FC5D43" />
+                    <path d="M9.875 17.5898H13.125" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <div className="text-white text-xs font-medium">
                     {siteSettings.phone || "01886666619"}
                   </div>
                 </a>
-                
+
                 {/* Email with email icon */}
                 {siteSettings.email && (
                   <a href={`mailto:${siteSettings.email}`} className="flex items-center gap-1 hover:opacity-80 transition-opacity">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 24 25" fill="none">
-                      <path d="M2 6.5L8.91302 10.417C11.4616 11.861 12.5384 11.861 15.087 10.417L22 6.5" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                      <path d="M2.01577 13.9756C2.08114 17.0412 2.11383 18.5739 3.24496 19.7094C4.37608 20.8448 5.95033 20.8843 9.09883 20.9634C11.0393 21.0122 12.9607 21.0122 14.9012 20.9634C18.0497 20.8843 19.6239 20.8448 20.7551 19.7094C21.8862 18.5739 21.9189 17.0412 21.9842 13.9756C22.0053 12.9899 22.0053 12.0101 21.9842 11.0244C21.9189 7.95886 21.8862 6.42609 20.7551 5.29066C19.6239 4.15523 18.0497 4.11568 14.9012 4.03657C12.9607 3.98781 11.0393 3.98781 9.09882 4.03656C5.95033 4.11566 4.37608 4.15521 3.24495 5.29065C2.11382 6.42608 2.08114 7.95885 2.01576 11.0244C1.99474 12.0101 1.99475 12.9899 2.01577 13.9756Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                      <path d="M2 6.5L8.91302 10.417C11.4616 11.861 12.5384 11.861 15.087 10.417L22 6.5" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
+                      <path d="M2.01577 13.9756C2.08114 17.0412 2.11383 18.5739 3.24496 19.7094C4.37608 20.8448 5.95033 20.8843 9.09883 20.9634C11.0393 21.0122 12.9607 21.0122 14.9012 20.9634C18.0497 20.8843 19.6239 20.8448 20.7551 19.7094C21.8862 18.5739 21.9189 17.0412 21.9842 13.9756C22.0053 12.9899 22.0053 12.0101 21.9842 11.0244C21.9189 7.95886 21.8862 6.42609 20.7551 5.29066C19.6239 4.15523 18.0497 4.11568 14.9012 4.03657C12.9607 3.98781 11.0393 3.98781 9.09882 4.03656C5.95033 4.11566 4.37608 4.15521 3.24495 5.29065C2.11382 6.42608 2.08114 7.95885 2.01576 11.0244C1.99474 12.0101 1.99475 12.9899 2.01577 13.9756Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
                     </svg>
                     <div className="text-white text-xs">
                       {siteSettings.email}
@@ -384,7 +404,7 @@ const Navbar = () => {
                   </a>
                 )}
               </div>
-              
+
               {/* Right: Social Icons */}
               <div className="flex gap-1">
                 {socialMediaItems
@@ -421,7 +441,7 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Desktop layout: phone/email left, description center, social icons right */}
           <div className="hidden md:grid grid-cols-3 gap-4 items-center">
             {/* Left Column: Phone and Email with icons */}
@@ -429,21 +449,21 @@ const Navbar = () => {
               {/* Phone with phone icon */}
               <a href={`tel:${siteSettings.phone || "01886666619"}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 24 25" fill="none">
-                  <path d="M15.5625 4.5H7.4375C6.09131 4.5 5 5.47683 5 6.68182V18.3182C5 19.5232 6.09131 20.5 7.4375 20.5H15.5625C16.9087 20.5 18 19.5232 18 18.3182V6.68182C18 5.47683 16.9087 4.5 15.5625 4.5Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M9.875 17.5898H13.125H9.875Z" fill="#FC5D43"/>
-                  <path d="M9.875 17.5898H13.125" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15.5625 4.5H7.4375C6.09131 4.5 5 5.47683 5 6.68182V18.3182C5 19.5232 6.09131 20.5 7.4375 20.5H15.5625C16.9087 20.5 18 19.5232 18 18.3182V6.68182C18 5.47683 16.9087 4.5 15.5625 4.5Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9.875 17.5898H13.125H9.875Z" fill="#FC5D43" />
+                  <path d="M9.875 17.5898H13.125" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <div className="text-white text-sm font-semibold">
                   {siteSettings.phone || "01886666619"}
                 </div>
               </a>
-              
+
               {/* Email with email icon */}
               {siteSettings.email && (
                 <a href={`mailto:${siteSettings.email}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 24 25" fill="none">
-                    <path d="M2 6.5L8.91302 10.417C11.4616 11.861 12.5384 11.861 15.087 10.417L22 6.5" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                    <path d="M2.01577 13.9756C2.08114 17.0412 2.11383 18.5739 3.24496 19.7094C4.37608 20.8448 5.95033 20.8843 9.09883 20.9634C11.0393 21.0122 12.9607 21.0122 14.9012 20.9634C18.0497 20.8843 19.6239 20.8448 20.7551 19.7094C21.8862 18.5739 21.9189 17.0412 21.9842 13.9756C22.0053 12.9899 22.0053 12.0101 21.9842 11.0244C21.9189 7.95886 21.8862 6.42609 20.7551 5.29066C19.6239 4.15523 18.0497 4.11568 14.9012 4.03657C12.9607 3.98781 11.0393 3.98781 9.09882 4.03656C5.95033 4.11566 4.37608 4.15521 3.24495 5.29065C2.11382 6.42608 2.08114 7.95885 2.01576 11.0244C1.99474 12.0101 1.99475 12.9899 2.01577 13.9756Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+                    <path d="M2 6.5L8.91302 10.417C11.4616 11.861 12.5384 11.861 15.087 10.417L22 6.5" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M2.01577 13.9756C2.08114 17.0412 2.11383 18.5739 3.24496 19.7094C4.37608 20.8448 5.95033 20.8843 9.09883 20.9634C11.0393 21.0122 12.9607 21.0122 14.9012 20.9634C18.0497 20.8843 19.6239 20.8448 20.7551 19.7094C21.8862 18.5739 21.9189 17.0412 21.9842 13.9756C22.0053 12.9899 22.0053 12.0101 21.9842 11.0244C21.9189 7.95886 21.8862 6.42609 20.7551 5.29066C19.6239 4.15523 18.0497 4.11568 14.9012 4.03657C12.9607 3.98781 11.0393 3.98781 9.09882 4.03656C5.95033 4.11566 4.37608 4.15521 3.24495 5.29065C2.11382 6.42608 2.08114 7.95885 2.01576 11.0244C1.99474 12.0101 1.99475 12.9899 2.01577 13.9756Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
                   </svg>
                   <div className="text-white text-sm">
                     {siteSettings.email}
@@ -451,7 +471,7 @@ const Navbar = () => {
                 </a>
               )}
             </div>
-            
+
             {/* Center Column: Short Description */}
             <div className="text-center">
               <div className="text-sm sm:text-base text-white">
@@ -462,7 +482,7 @@ const Navbar = () => {
                 )}
               </div>
             </div>
-            
+
             {/* Right Column: Social Media Icons */}
             <div className="flex justify-end gap-2">
               {socialMediaItems
@@ -502,7 +522,7 @@ const Navbar = () => {
         </div>
 
         {/* Main Navbar Area */}
-        <div 
+        <div
           className="px-2 sm:px-4 md:px-[40px] lg:px-[82px] min-h-[64px] relative"
           style={{ backgroundColor: secondaryColor }}
         >
@@ -531,7 +551,8 @@ const Navbar = () => {
                   </svg>
                 </button>
                 {isDropdownOpen && (
-                  <ul ref={dropdownRef} className="absolute left-4 mt-2 bg-base-100 rounded-box z-50 w-52 p-4 shadow grid gap-4 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                  <>
+                  <ul ref={dropdownRef} className="absolute left-4 mt-1 bg-base-100 rounded-box z-50 w-52 p-4 shadow flex flex-col gap-2 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
                     <li>
                       <NavLink to="/" {...navLinkStyle({ isActive: location.pathname === "/" })} onClick={handleMenuItemClick}>
                         হোম
@@ -548,11 +569,13 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink to="/games" {...navLinkStyle({ isActive: location.pathname === "/games" })} onClick={handleMenuItemClick}>
-                        গেমস
-                      </NavLink>
+                      {siteSettings?.active_games_menu !== false && (
+                        <NavLink to="/games" {...navLinkStyle({ isActive: location.pathname === "/games" })} onClick={handleMenuItemClick}>
+                          গেমস
+                        </NavLink>
+                      )}
                     </li>
-                    <li className="relative">
+                    <li className="relative" ref={mobileGalleryButtonRef}>
                       <button
                         type="button"
                         className={`flex items-center gap-1 w-full px-2 py-1 text-left rounded-[12px] ${isGalleryActive ? "text-white" : "hover:text-black"}`}
@@ -562,36 +585,43 @@ const Navbar = () => {
                         গ্যালারী
                         <RiArrowDropDownLine />
                       </button>
-                      {isGalleryOpen && (
-                        <ul className="absolute left-0 top-full mt-1 w-auto bg-white rounded-box shadow z-50 p-2">
-                          <li>
-                            <NavLink
-                              {...navLinkStyle2({ isActive: location.pathname === "/photoGallery" })}
-                              to="/photoGallery"
-                              onClick={handleMenuItemClick}
-                            >
-                              ফটো গ্যালারী
-                            </NavLink>
-                          </li>
-                          <li className="mt-1">
-                            <NavLink
-                              {...navLinkStyle2({ isActive: location.pathname === "/videoGallery" })}
-                              to="/videoGallery"
-                              onClick={handleMenuItemClick}
-                            >
-                              ভিডিও গ্যালারী
-                            </NavLink>
-                          </li>
-                        </ul>
-                      )}
                     </li>
                     <li>
-                      <NavLink to="/blog" {...navLinkStyle({ isActive: location.pathname === "/blog" })} onClick={handleMenuItemClick}>
-                        ব্লগ
-                      </NavLink>
+                      {siteSettings?.active_blog_menu !== false && (
+                        <NavLink to="/blog" {...navLinkStyle({ isActive: location.pathname === "/blog" })} onClick={handleMenuItemClick}>
+                          ব্লগ
+                        </NavLink>
+                      )}
                     </li>
-
                   </ul>
+                  {/* Mobile gallery submenu rendered outside main scroll area for better visibility */}
+                  {isGalleryOpen && (
+                    <ul
+                      ref={mobileGalleryMenuRef}
+                      className="fixed bg-white rounded-box shadow z-[60] p-2 w-40 space-y-1"
+                      style={{ top: mobileGalleryPos.bottom + 4, left: mobileGalleryPos.left }}
+                    >
+                      <li>
+                        <NavLink
+                          {...navLinkStyle2({ isActive: location.pathname === "/photoGallery" })}
+                          to="/photoGallery"
+                          onClick={handleMenuItemClick}
+                        >
+                          ফটো গ্যালারী
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink
+                          {...navLinkStyle2({ isActive: location.pathname === "/videoGallery" })}
+                          to="/videoGallery"
+                          onClick={handleMenuItemClick}
+                        >
+                          ভিডিও গ্যালারী
+                        </NavLink>
+                      </li>
+                    </ul>
+                  )}
+                  </>
                 )}
               </div>
               <NavLink to="/" className="btn btn-ghost text-lg md:text-xl flex items-center gap-2 px-0 text-black">
@@ -615,21 +645,24 @@ const Navbar = () => {
                 <NavLink to="/training" {...navLinkStyle({ isActive: location.pathname === "/training" })}>
                   প্রশিক্ষক
                 </NavLink>
-                <NavLink to="/games" {...navLinkStyle({ isActive: location.pathname === "/games" })}>
-                  গেমস
-                </NavLink>
-                <NavLink to="/blog" {...navLinkStyle({ isActive: location.pathname === "/blog" })}>
-                  ব্লগ
-                </NavLink>
+                {siteSettings?.active_games_menu !== false && (
+                  <NavLink to="/games" {...navLinkStyle({ isActive: location.pathname === "/games" })}>
+                    গেমস
+                  </NavLink>
+                )}
+                {siteSettings?.active_blog_menu !== false && (
+                  <NavLink to="/blog" {...navLinkStyle({ isActive: location.pathname === "/blog" })}>
+                    ব্লগ
+                  </NavLink>
+                )}
 
                 <div className="dropdown dropdown-hover" ref={galleryButtonRef}>
                   <label
                     tabIndex={0}
-                    className={`flex items-center gap-1 cursor-pointer px-2 py-1 rounded-[12px] transition-colors duration-200 ${
-                      isGalleryActive 
-                        ? "text-white" 
+                    className={`flex items-center gap-1 cursor-pointer px-2 py-1 rounded-[12px] transition-colors duration-200 ${isGalleryActive
+                        ? "text-white"
                         : "text-black hover:text-black"
-                    }`}
+                      }`}
                     style={isGalleryActive ? { backgroundColor: buttonColor } : {}}
                   >
                     গ্যালারী

@@ -4,7 +4,7 @@ import { RxCross2 } from "react-icons/rx";
 import { Api_Base_Url, Site_Id } from "../../config/api";
 
 const SPECIAL_DEAL_KEY = "lastSpecialDealTime";
-const COOLDOWN_MINUTES = 1;
+const COOLDOWN_MINUTES = 20;
 
 const SpecialDeal = () => {
   const [show, setShow] = useState(false);
@@ -23,7 +23,6 @@ const SpecialDeal = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Offer data:", data);
 
         if (data.results && Array.isArray(data.results) && data.results.length > 0) {
           const firstOffer = data.results[0];

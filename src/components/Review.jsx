@@ -17,7 +17,6 @@ const Review = () => {
     })
       .then((res) => res.json())
       .then((resData) => {
-        console.log("Review Data:", resData);
         
         setData(resData);
         setLoading(false);

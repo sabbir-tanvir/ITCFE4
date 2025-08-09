@@ -21,7 +21,6 @@ const WhyChooseUS = () => {
     })
       .then((res) => res.json())
       .then((resData) => {
-        console.log("Why Our Course Data:", resData);
 
         setData(resData);
         setLoading(false);

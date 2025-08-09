@@ -37,7 +37,6 @@ const Hero = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Banner Data:", data);
 
         if (Array.isArray(data) && data.length > 0) {
           setBanner(data[0]);

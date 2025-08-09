@@ -44,7 +44,6 @@ const Trainer = () => {
   if (loading || !buttonColor) {
     return (
       <section className="relative w-full max-w-none px-2 sm:px-4 lg:py-12 lg:mt-20">
-        <h1 className="text-2xl md:text-3xl font-bold mb-8 relative z-10">প্রশিক্ষক</h1>
         <ShimmerSimpleGallery card row={2} col={3} gap={30} caption imageHeight={192} />
       </section>
     );
@@ -59,7 +58,7 @@ const Trainer = () => {
         </div>
       </div>
 
-      <h1 className="text-2xl md:text-3xl font-bold mb-8 relative z-10">প্রশিক্ষক</h1>
+      <h1 className="text-2xl md:text-3xl text-center font-bold mb-8 relative z-10">প্রশিক্ষক</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 relative z-10">
         {trainers.slice(0, visibleTrainers).map((trainer) => (
           <div

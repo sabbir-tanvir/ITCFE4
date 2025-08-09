@@ -111,7 +111,7 @@ const SuccessStories = () => {
                 className="flex flex-col md:flex-row gap-8 items-center bg-white rounded-xl p-6 shadow-md"
               >
                 {/* Student Image */}
-                <div className="w-full md:w-[300px] h-[300px] rounded-xl overflow-hidden">
+                <div className="w-full md:w-[250px] lg:w-[220px] h-[300px] md:h-[250px] lg:h-[220px] rounded-xl overflow-hidden">
                   <img
                     src={story.image}
                     alt={story.name}

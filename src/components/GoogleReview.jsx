@@ -111,18 +111,17 @@ const GoogleReview = ({ courseId, reviewsData }) => {
   const [authInstance, setAuthInstance] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [, setButtonColor] = useState("#FC5D43");
+  const [buttoncolor, setButtonColor] = useState("#FC5D43");
   const [primaryColor, setPrimaryColor] = useState("#f50000"); // fallback
   const [secondaryColor, setSecondaryColor] = useState("#f0f0f0"); // fallback
-  const [siteLogo, setSiteLogo] = useState(null);
-  const [siteName, setSiteName] = useState("আমাদের শিক্ষা কম্পিউটার ট্রেনিং সেন্টার");
+  const [isReviewBtnHover, setIsReviewBtnHover] = useState(false);
+  // Removed unused siteLogo / siteName states (UI currently commented out)
 
   // Use reviewsData from props, but allow refresh after submit
   const [reviewList, setReviewList] = useState(
     reviewsData && (Array.isArray(reviewsData.results) ? reviewsData.results : Array.isArray(reviewsData) ? reviewsData : [])
   );
-  const averageRating = reviewList && reviewList.length > 0 ? (reviewList.reduce((sum, r) => sum + (r.rating || 0), 0) / reviewList.length).toFixed(1) : null;
-  const reviewCount = reviewList ? reviewList.length : 0;
+  // Removed unused averageRating / reviewCount (statistics section commented out)
 
 
 
@@ -135,8 +134,7 @@ const GoogleReview = ({ courseId, reviewsData }) => {
           if (data.button_color) setButtonColor(data.button_color);
           if (data.primary_color) setPrimaryColor(data.primary_color);
           if (data.secondary_color) setSecondaryColor(data.secondary_color);
-          if (data.logo) setSiteLogo(data.logo);
-          if (data.site_name) setSiteName(data.site_name);
+          // Ignoring logo / site_name for now
         }
       })
       .catch((err) => {
@@ -230,7 +228,9 @@ const GoogleReview = ({ courseId, reviewsData }) => {
             else if (errData.non_field_errors && Array.isArray(errData.non_field_errors)) errorMsg = errData.non_field_errors.join(' ');
             else if (Object.keys(errData).length > 0) errorMsg = Object.entries(errData).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(' ') : v}`).join(' ');
           }
-        } catch { }
+        } catch (err) {
+          console.warn('Failed to refetch reviews:', err);
+        }
         setError(errorMsg);
         return;
       }
@@ -243,11 +243,14 @@ const GoogleReview = ({ courseId, reviewsData }) => {
           const data = await res2.json();
           setReviewList(Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : []);
         }
-      } catch { }
+      } catch (err) {
+        console.warn('Secondary fetch error ignored:', err);
+      }
       setIsModalOpen(false);
       setRating(0);
       setComment("");
-    } catch (e) {
+    } catch (submitErr) {
+      console.error('Submit review error:', submitErr);
       setError("Failed to submit review. Please try again.");
     }
   };
@@ -329,7 +332,12 @@ const GoogleReview = ({ courseId, reviewsData }) => {
 
             {/* Review Button */}
             <button
-              className="w-full px-6 py-3 bg-[#4285F4] text-white rounded-lg hover:bg-blue-600 font-['Hind_Siliguri'] flex items-center justify-center gap-2"
+              className="w-full px-6 py-3 text-white rounded-lg font-['Hind_Siliguri'] flex items-center justify-center gap-2 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              style={{ backgroundColor: isReviewBtnHover ? '#2563EB' : buttoncolor }}
+              onMouseEnter={() => setIsReviewBtnHover(true)}
+              onMouseLeave={() => setIsReviewBtnHover(false)}
+              onFocus={() => setIsReviewBtnHover(true)}
+              onBlur={() => setIsReviewBtnHover(false)}
               onClick={handleReviewButton}
             >
               <span>review us on</span>

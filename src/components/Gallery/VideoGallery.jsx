@@ -85,7 +85,7 @@ const VideoGallery = () => {
             <div className="h-10 w-64 rounded bg-gray-200 animate-pulse" />
           </div>
         ) : (
-          <h2 className="text-4xl font-bold mb-4 mt-8 text-red-700">
+          <h2 className="text-4xl text-center font-bold mb-4 mt-8 text-red-700">
             ভিডিও গ্যালারী
           </h2>
         )}

@@ -205,11 +205,11 @@ const OurThoughts = () => {
                 </>
               )}
             </div>
-            <div className="w-[180px] md:w-[205px] px-[22px] py-[8px] bg-button hover:bg-button-hover rounded flex justify-center items-center gap-[10px]">
+            {/* <div className="w-[180px] md:w-[205px] px-[22px] py-[8px] bg-button hover:bg-button-hover rounded flex justify-center items-center gap-[10px]">
               <div className="text-white text-[14px] md:text-[16px] font-hind-siliguri font-medium">
                 <Link to="/OurOpinion">বিস্তারিত</Link>
               </div>
-            </div>
+            </div> */}
           </div>
           {/* Right: Cards section */}
           <div className="w-full lg:w-[372px] flex flex-col mb-8 items-start gap-6 lg:gap-[24px]">

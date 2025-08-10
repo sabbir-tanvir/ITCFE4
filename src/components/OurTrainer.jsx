@@ -316,7 +316,7 @@ const OurTrainer = () => {
               <ShimmerText line={1} gap={10} />
             </div>
           ) : (
-            <h2 className="text-center text-[#FC5D43] text-[22px] sm:text-[28px] md:text-[32px] font-semibold">
+            <h2 className="text-center text-black text-[22px] sm:text-[28px] md:text-[32px] font-semibold">
               আমাদের প্রশিক্ষক
             </h2>
           )}

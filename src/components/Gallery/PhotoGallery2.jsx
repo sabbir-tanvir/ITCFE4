@@ -142,7 +142,7 @@ const PhotoGallery2 = () => {
               <div className="h-10 w-48 md:w-64 rounded bg-gray-200 animate-pulse" />
             </div>
           ) : (
-            <div className="lg:text-center pl-[10%] text-red-500 lg:pl-[10%] mt-8 w-full top-6 text-2xl md:text-3xl font-semibold mb-2">
+            <div className="lg:text-center pl-[10%] text-black lg:pl-[10%] mt-8 w-full top-6 text-2xl md:text-3xl font-semibold mb-2">
               ফটো গ্যালারী
             </div>
           )}

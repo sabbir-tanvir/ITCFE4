@@ -259,7 +259,7 @@ export default function Footer() {
               ঠিকানা: {settings?.address || "Bashundhara, Dhaka"}
             </div>
           </div>
-          <div className="flex flex-col gap-3">
+          {/* <div className="flex flex-col gap-3">
             <div className={followTitleClass}>ফলো করুন</div>
             <div className="flex flex-wrap gap-2">
               {[
@@ -320,7 +320,7 @@ export default function Footer() {
                   );
                 })}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

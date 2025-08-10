@@ -12,7 +12,8 @@ const OurThoughts = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({
     title: "",
-    points: [],
+    points: [], // kept for backward compatibility
+    html: "",   // full raw HTML from backend
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -20,14 +21,17 @@ const OurThoughts = () => {
   const [missionVision, setMissionVision] = useState({
     title: "",
     points: [],
+    html: "",
   });
   const [strategy, setStrategy] = useState({
     title: "",
     points: [],
+    html: "",
   });
   const [facilities, setFacilities] = useState({
     title: "",
     points: [],
+    html: "",
   });
 
   // State for 'আমাদের কথা' section
@@ -43,50 +47,50 @@ const OurThoughts = () => {
         // Card 1: mission_vision
         if (data && data.mission_vision) {
           const parser = new window.DOMParser();
-          const doc = parser.parseFromString(data.mission_vision, "text/html");
-          const h2 = doc.querySelector("h2");
-          const lis = Array.from(doc.querySelectorAll("li")).map((li) =>
-            li.textContent.trim()
-          );
-
-
-          setMissionVision({
-            title: h2 ? h2.textContent : "",
-            points: lis.length > 0 ? lis : [],
-          });
+            const doc = parser.parseFromString(data.mission_vision, "text/html");
+            const h2 = doc.querySelector("h2");
+            const lis = Array.from(doc.querySelectorAll("li")).map((li) =>
+              li.textContent.trim()
+            );
+            setMissionVision({
+              title: h2 ? h2.textContent : "",
+              points: lis.length > 0 ? lis : [],
+              html: data.mission_vision, // store full raw HTML
+            });
         }
         // Card 2: our_strategy
         if (data && data.our_strategy) {
-          const parser = new window.DOMParser();
-          const doc = parser.parseFromString(data.our_strategy, "text/html");
-          const h2 = doc.querySelector("h2");
-          const lis = Array.from(doc.querySelectorAll("li")).map((li) =>
-            li.textContent.trim()
-          );
-          setStrategy({
-            title: h2 ? h2.textContent : "",
-            points: lis.length > 0 ? lis : [],
-          });
+            const parser = new window.DOMParser();
+            const doc = parser.parseFromString(data.our_strategy, "text/html");
+            const h2 = doc.querySelector("h2");
+            const lis = Array.from(doc.querySelectorAll("li")).map((li) =>
+              li.textContent.trim()
+            );
+            setStrategy({
+              title: h2 ? h2.textContent : "",
+              points: lis.length > 0 ? lis : [],
+              html: data.our_strategy,
+            });
         }
         // Card 4: opportunity
         if (data && data.opportunity) {
-          const parser = new window.DOMParser();
-          const doc = parser.parseFromString(data.opportunity, "text/html");
-          const h2 = doc.querySelector("h2");
-          const lis = Array.from(doc.querySelectorAll("li")).map((li) =>
-            li.textContent.trim()
-          );
-          setFacilities({
-            title: h2 ? h2.textContent : "",
-            points: lis.length > 0 ? lis : [],
-          });
+            const parser = new window.DOMParser();
+            const doc = parser.parseFromString(data.opportunity, "text/html");
+            const h2 = doc.querySelector("h2");
+            const lis = Array.from(doc.querySelectorAll("li")).map((li) =>
+              li.textContent.trim()
+            );
+            setFacilities({
+              title: h2 ? h2.textContent : "",
+              points: lis.length > 0 ? lis : [],
+              html: data.opportunity,
+            });
         }
         // আমাদের কথা: our_talk
         if (data && data.our_talk) {
           const parser = new window.DOMParser();
           const doc = parser.parseFromString(data.our_talk, "text/html");
           // Debug logs to inspect how we're receiving and parsing the HTML
-
 
           const h2 = doc.querySelector("h2");
           // Try to get all content after h2, or fallback to the whole HTML
@@ -102,7 +106,6 @@ const OurThoughts = () => {
             // fallback to all innerHTML
             content = doc.body.innerHTML;
           }
-
           setOurTalk({
             title: h2 ? h2.textContent : "",
             content: content || data.our_talk,
@@ -205,12 +208,7 @@ const OurThoughts = () => {
                           </button>
                         )}
                       </>
-                    ) : (
-                      <div className="w-full">
-                        <ShimmerText line={2} gap={0} variant="primary" className="w-[85%] h-[18px] md:h-[20px] rounded bg-gray-200 mb-2" />
-                        <ShimmerText line={3} gap={8} variant="primary" className="w-full h-[38px] md:h-[44px] rounded bg-gray-200" />
-                      </div>
-                    )}
+                    ) : <span>Loading...</span>}
                   </div>
                 </>
               )}
@@ -345,40 +343,56 @@ const OurThoughts = () => {
             className="bg-white rounded-lg p-6 max-w-lg w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold font-hind-siliguri">
-                {modalContent.title}
-              </h2>
-              <button
-                onClick={handleModalClose}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <ul className="space-y-2">
-              {modalContent.points.map((point, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-[#186D6D]">•</span>
-                  <span className="text-gray-700 font-hind-siliguri">
-                    {point}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {(() => {
+              const rawHtml = modalContent.html || "";
+              // remove only the first h2 (case-insensitive)
+              const htmlWithoutFirstH2 = rawHtml.replace(/<h2[^>]*>[\s\S]*?<\/h2>/i, "");
+              return (
+                <>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-semibold font-hind-siliguri">
+                      {modalContent.title}
+                    </h2>
+                    <button
+                      onClick={handleModalClose}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  {modalContent.html ? (
+                    <div
+                      className="prose max-w-none font-hind-siliguri text-gray-800 text-[15px] leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: htmlWithoutFirstH2.trim() }}
+                    />
+                  ) : (
+                    <ul className="space-y-2">
+                      {modalContent.points.map((point, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-[#186D6D]">•</span>
+                          <span className="text-gray-700 font-hind-siliguri">
+                            {point}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       )}

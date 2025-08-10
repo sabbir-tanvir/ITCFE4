@@ -93,7 +93,7 @@ const Blog = () => {
         <div className="flex justify-center mt-8">
           <button
             onClick={showMorePosts}
-            className=" font-bold py-2 px-4 rounded"
+            className="text-white font-bold py-2 px-4 rounded"
             style={{ backgroundColor: buttonColor}}
           >
             Show More

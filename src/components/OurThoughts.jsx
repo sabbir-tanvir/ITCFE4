@@ -86,14 +86,8 @@ const OurThoughts = () => {
           const parser = new window.DOMParser();
           const doc = parser.parseFromString(data.our_talk, "text/html");
           // Debug logs to inspect how we're receiving and parsing the HTML
-          console.log('[our_talk] Raw HTML string from API:', data.our_talk);
-          console.log('[our_talk] Parsed full document:', doc);
-          console.log('[our_talk] Body innerHTML:', doc.body.innerHTML);
-          console.log('[our_talk] Body textContent:', doc.body.textContent);
-          console.log('[our_talk] Body children (indexed):');
-          Array.from(doc.body.children).forEach((el, idx) => {
-            console.log(`  [child ${idx}] <${el.tagName.toLowerCase()}> =>`, el.outerHTML);
-          });
+
+
           const h2 = doc.querySelector("h2");
           // Try to get all content after h2, or fallback to the whole HTML
           let content = "";
@@ -108,8 +102,7 @@ const OurThoughts = () => {
             // fallback to all innerHTML
             content = doc.body.innerHTML;
           }
-          console.log('[our_talk] Extracted title (h2):', h2 ? h2.textContent : '(none)');
-          console.log('[our_talk] Extracted content after h2:', content);
+
           setOurTalk({
             title: h2 ? h2.textContent : "",
             content: content || data.our_talk,
@@ -121,7 +114,6 @@ const OurThoughts = () => {
         // fallback to default
         setIsLoading(false);
       });
-    // eslint-disable-next-line
   }, []);
 
   const modalContents = {

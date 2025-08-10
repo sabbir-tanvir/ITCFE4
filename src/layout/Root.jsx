@@ -103,7 +103,7 @@ const Root = () => {
         />
       )}
 
-      <main className="lg:pt-32 pt-32 md:pt-32">
+      <main className="lg:pt-28 pt-32 md:pt-32">
         <Outlet></Outlet>
       </main>
       <Footer></Footer>

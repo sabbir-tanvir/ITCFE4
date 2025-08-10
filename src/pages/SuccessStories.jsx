@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Api_Base_Url, Site_Id } from "../config/api";
 import { ShimmerPostItem } from "react-shimmer-effects";
+import WorkSample from "../assets/ourWork/1.jpg"; // placeholder image for dummy story
 
 const SuccessStories = () => {
   const [stories, setStories] = useState([]);
@@ -88,6 +89,44 @@ const SuccessStories = () => {
       <section className="mt-[80px] md:mt-[120px] lg:mt-[147px]">
         <div className="max-w-[1440px] mx-auto px-4 min-h-[400px] flex items-center justify-center text-lg font-semibold text-red-600">
           {error}
+        </div>
+      </section>
+    );
+  }
+
+  // Fallback dummy content when no stories are returned
+  if (!loading && !error && stories.length === 0) {
+    const dummyStory = {
+      id: 'dummy',
+      name: 'উদাহরণ শিক্ষার্থী',
+      image: WorkSample,
+      description: 'এখানে সফলতার একটি গল্প প্রদর্শিত হবে। আপনার প্রতিষ্ঠান থেকে যেসব শিক্ষার্থী দক্ষতা অর্জন করে ক্যারিয়ারে সফলতা পেয়েছে তাদের বাস্তব অভিজ্ঞতা এই অংশে যোগ হবে। আপনি যখন অ্যাডমিন প্যানেলে সফলতার গল্প যুক্ত করবেন, তা এখানে স্বয়ংক্রিয়ভাবে দেখা যাবে।'
+    };
+    return (
+      <section className="mt-[40px] md:mt-[40px] mb-[40px] lg:mt-[47px]">
+        <div className="max-w-[1440px] mx-auto px-4 xl:px-12">
+          <h1 className="text-[32px] md:text-[36px] lg:text-[40px] font-hind-siliguri font-semibold text-center mb-12">
+            সফলতার গল্প
+          </h1>
+          <div className="flex flex-col md:flex-row gap-8 items-center bg-white rounded-xl p-6 shadow-md">
+            <div className="w-full md:w-[250px] lg:w-[220px] h-[300px] md:h-[250px] lg:h-[220px] rounded-xl overflow-hidden">
+              <img src={dummyStory.image} alt={dummyStory.name} className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1 space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white text-xl font-semibold">
+                  {dummyStory.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold font-hind-siliguri">{dummyStory.name}</h3>
+                </div>
+              </div>
+              <p className="text-gray-700 text-lg leading-relaxed font-hind-siliguri text-justify">
+                {dummyStory.description}
+              </p>
+              <p className="text-sm italic text-gray-500 font-hind-siliguri">(কোনো ডেটা পাওয়া যায়নি। এটি একটি ডেমো কার্ড।)</p>
+            </div>
+          </div>
         </div>
       </section>
     );

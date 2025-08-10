@@ -9,7 +9,7 @@ const Hero = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [buttonColor, setButtonColor] = useState('#FC5D43');
-  const [primaryColor, setPrimaryColor] = useState('#FB923C'); // orange-400 as default
+  const [primaryColor, setPrimaryColor] = useState(''); // orange-400 as default
 
 
   // Fetch colors from site settings
@@ -25,6 +25,7 @@ const Hero = () => {
       })
       .catch(() => { });
   }, []);
+  
 
   useEffect(() => {
     setLoading(true);

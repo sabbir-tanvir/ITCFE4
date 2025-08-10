@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import MissionVision from "../assets/Mission Vission/marketeq_goal1.png";
 import Strategy from "../assets/Mission Vission/marketeq_goal2.png";
 import SuccessStory from "../assets/Mission Vission/marketeq_goal3.png";
@@ -48,8 +48,8 @@ const OurThoughts = () => {
           const lis = Array.from(doc.querySelectorAll("li")).map((li) =>
             li.textContent.trim()
           );
-         
-          
+
+
           setMissionVision({
             title: h2 ? h2.textContent : "",
             points: lis.length > 0 ? lis : [],
@@ -85,6 +85,15 @@ const OurThoughts = () => {
         if (data && data.our_talk) {
           const parser = new window.DOMParser();
           const doc = parser.parseFromString(data.our_talk, "text/html");
+          // Debug logs to inspect how we're receiving and parsing the HTML
+          console.log('[our_talk] Raw HTML string from API:', data.our_talk);
+          console.log('[our_talk] Parsed full document:', doc);
+          console.log('[our_talk] Body innerHTML:', doc.body.innerHTML);
+          console.log('[our_talk] Body textContent:', doc.body.textContent);
+          console.log('[our_talk] Body children (indexed):');
+          Array.from(doc.body.children).forEach((el, idx) => {
+            console.log(`  [child ${idx}] <${el.tagName.toLowerCase()}> =>`, el.outerHTML);
+          });
           const h2 = doc.querySelector("h2");
           // Try to get all content after h2, or fallback to the whole HTML
           let content = "";
@@ -99,6 +108,8 @@ const OurThoughts = () => {
             // fallback to all innerHTML
             content = doc.body.innerHTML;
           }
+          console.log('[our_talk] Extracted title (h2):', h2 ? h2.textContent : '(none)');
+          console.log('[our_talk] Extracted content after h2:', content);
           setOurTalk({
             title: h2 ? h2.textContent : "",
             content: content || data.our_talk,
@@ -133,14 +144,7 @@ const OurThoughts = () => {
   };
 
   // Helper to strip HTML and truncate to 150 words
-  // function getTruncatedText(html, wordLimit = 150) {
-  //   const div = document.createElement("div");
-  //   div.innerHTML = html;
-  //   const text = div.textContent || div.innerText || "";
-  //   const words = text.split(/\s+/);
-  //   if (words.length <= wordLimit) return text;
-  //   return words.slice(0, wordLimit).join(" ") + " ...";
-  // }
+  
 
   // Add this utility function near the top of the file (after imports)
   function removeDateFromContent(content) {
@@ -153,18 +157,28 @@ const OurThoughts = () => {
   }
 
 
-  // State for see more/less in ourTalk
+  // State for see more/less in ourTalk (HTML structure preserved)
   const [showFullOurTalk, setShowFullOurTalk] = useState(false);
-  // Helper to strip HTML and get words
-  function getWordsFromHtml(html) {
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    const text = div.textContent || div.innerText || "";
-    return text.split(/\s+/);
+
+  // Prepare structured HTML from backend (remove date, keep tags like <p>, <strong>)
+  const sanitizedOurTalkHtml = removeDateFromContent(ourTalk.content || "");
+
+  // Derive paragraphs for partial display
+  function getParagraphHtml(html) {
+    if (!html) return { firstPart: "", full: "", hasMore: false };
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    const paragraphs = Array.from(container.querySelectorAll('p'));
+    if (paragraphs.length === 0) {
+      // fallback: treat entire html as one piece
+      return { firstPart: html, full: html, hasMore: false };
+    }
+    const firstPart = paragraphs[0].outerHTML; // first paragraph only
+    const full = paragraphs.map(p => p.outerHTML).join('');
+    return { firstPart, full, hasMore: paragraphs.length > 1 };
   }
-  const ourTalkWords = getWordsFromHtml(removeDateFromContent(ourTalk.content));
-  const ourTalkHasMore = ourTalkWords.length > 120;
-  const ourTalkTruncated = ourTalkHasMore ? ourTalkWords.slice(0, 120).join(" ") + " ..." : ourTalkWords.join(" ");
+
+  const { firstPart: ourTalkFirstParagraph, full: ourTalkFullHtml, hasMore: ourTalkHasMore } = getParagraphHtml(sanitizedOurTalkHtml);
 
   return (
     <section className="flex items-center justify-center min-h-[60vh] mt-[80px] mx-4 lg:pb-10 md:mt-[120px] lg:mt-[44px]">
@@ -183,23 +197,27 @@ const OurThoughts = () => {
                   <div className="w-full lg:w-[618px] text-black text-[24px] md:text-[28px] lg:text-[32px] font-hind-siliguri font-semibold">
                     {ourTalk.title}
                   </div>
-                  <div className="w-full lg:w-[800px] text-black text-[16px] md:text-[17px] lg:text-[18px] font-hind-siliguri font-normal text-justify">
+                  <div className="w-full lg:w-[744px] text-black text-[16px] md:text-[17px] lg:text-[18px] font-hind-siliguri font-normal text-justify">
                     {ourTalk.content ? (
                       <>
-                        <span>
-                          {showFullOurTalk ? ourTalkWords.join(" ") : ourTalkTruncated}
-                        </span>
+                        <div
+                          // Render either first paragraph or full HTML preserving backend structure
+                          dangerouslySetInnerHTML={{ __html: showFullOurTalk ? ourTalkFullHtml : ourTalkFirstParagraph }}
+                        />
                         {ourTalkHasMore && (
                           <button
-                            className="text-blue-600 cursor-pointer ml-2 hover:text-blue-800 transition-colors text-[15px] font-medium"
-                            onClick={() => setShowFullOurTalk((prev) => !prev)}
+                            className="text-blue-600 cursor-pointer mt-2 hover:text-blue-800 transition-colors text-[15px] font-medium"
+                            onClick={() => setShowFullOurTalk(prev => !prev)}
                           >
                             {showFullOurTalk ? 'কম দেখুন' : 'আরও দেখুন'}
                           </button>
                         )}
                       </>
                     ) : (
-                      <span>Loading...</span>
+                      <div className="w-full">
+                        <ShimmerText line={2} gap={0} variant="primary" className="w-[85%] h-[18px] md:h-[20px] rounded bg-gray-200 mb-2" />
+                        <ShimmerText line={3} gap={8} variant="primary" className="w-full h-[38px] md:h-[44px] rounded bg-gray-200" />
+                      </div>
                     )}
                   </div>
                 </>

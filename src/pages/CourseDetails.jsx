@@ -77,6 +77,16 @@ const CourseDetailsSkeleton = () => {
   );
 };
 
+// Strip a single outer <p> wrapper so we can embed content inline
+function stripOuterPTags(html) {
+  if (!html || typeof html !== 'string') return '';
+  const trimmed = html.trim();
+  if (/^<p[^>]*>/i.test(trimmed) && /<\/p>$/i.test(trimmed)) {
+    return trimmed.replace(/^<p[^>]*>/i, '').replace(/<\/p>$/i, '');
+  }
+  return trimmed;
+}
+
 const CourseDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -120,7 +130,7 @@ const CourseDetails = () => {
         if (parsed && parsed.timestamp && Date.now() - parsed.timestamp < cacheExpiry) {
           if (parsed.button_color) color = parsed.button_color;
         }
-      } catch (e) { /* ignore */ }
+  } catch { /* ignore */ }
     }
     if (color) {
       setButtonColor(color);
@@ -151,7 +161,8 @@ const CourseDetails = () => {
   const courseFromState = location.state?.course;
   const course = courseFromLoader || courseFromState;
 
-  const [instructor, setInstructor] = useState(null);
+
+  const [instructorsList, setInstructorsList] = useState([]); // supports one or many instructors
 
   // Debug: Log course object to see its structure
   // useEffect(() => {
@@ -166,39 +177,29 @@ const CourseDetails = () => {
 
   // Set instructor from course data if available
   useEffect(() => {
-    // Check if course has instructors array
-    if (course?.instructors && course.instructors.length > 0) {
-      setInstructor(course.instructors[0]); // Use first instructor
-      // console.log(
-      //   "Using instructor from instructors array:",
-      //   course.instructors[0]
-      // );
-    } else if (course?.instructor) {
-      setInstructor(course.instructor);
-      // console.log("Using instructor from course data:", course.instructor);
-    } else if (course?.instructor_id) {
-      // Fetch instructor details if not already included
-      const fetchInstructor = async () => {
+    if (!course) return;
+    if (Array.isArray(course.instructors) && course.instructors.length > 0) {
+      setInstructorsList(course.instructors);
+      return;
+    }
+    if (course.instructor) {
+      setInstructorsList([course.instructor]);
+      return;
+    }
+    if (course.instructor_id) {
+      (async () => {
         try {
-          const response = await fetch(
-            `${Api_Base_Url}/instructors/${course.instructor_id}/`,
-            {
-              headers: {
-                "Site-Id": Site_Id,
-              },
-            }
-          );
+          const response = await fetch(`${Api_Base_Url}/instructors/${course.instructor_id}/`, {
+            headers: { 'Site-Id': Site_Id },
+          });
           if (response.ok) {
-            const instructorData = await response.json();
-            setInstructor(instructorData);
-            // console.log("Fetched instructor data:", instructorData);
+            const data = await response.json();
+            setInstructorsList([data]);
           }
-        } catch (error) {
-          console.error("Error fetching instructor:", error);
+        } catch (err) {
+          console.error('Error fetching instructor:', err);
         }
-      };
-
-      fetchInstructor();
+      })();
     }
   }, [course]);
 
@@ -275,40 +276,31 @@ const CourseDetails = () => {
                       </div>
                     )}
                   </div>
-                  <div className="inline-flex justify-start items-center gap-3">
-                    {/* Instructor image clickable */}
-                    <img
-                      className="w-14 h-14 rounded-full hover:cursor-pointer"
-                      src={instructor?.image || "https://placehold.co/56x56"}
-                      alt="Instructor"
-                      onClick={() => {
-                        if (instructor?.id) {
-                          navigate(`/trainer/${instructor.id}`);
-                        }
-                      }}
-                    />
-                    <div className="inline-flex flex-col justify-start items-start gap-0.5">
-                      {/* Instructor name clickable */}
-                      <div
-                        className="justify-start text-zinc-900 text-xl font-bold cursor-pointer"
-                        onClick={() => {
-                          if (instructor?.id) {
-                            navigate(`/trainer/${instructor.id}`);
-                          }
-                        }}
-                      >
-                        ইন্সট্রাক্টর:{" "}
-                        {instructor?.name ||
-                          course.instructorName ||
-                          "তথ্য নেই"}
-                      </div>
-                      <div className="self-stretch justify-start text-zinc-600 text-base font-normal  ">
-                        {instructor?.designation ||
-                          course.instructorTitle ||
-                          "তথ্য নেই"}
-                      </div>
+                  {instructorsList.length > 0 && (
+                    <div className="flex flex-col gap-4 w-full">
+                      {instructorsList.map((inst) => (
+                        <div key={inst.id || inst.name} className="inline-flex justify-start items-center gap-3">
+                          <img
+                            className="w-14 h-14 rounded-full hover:cursor-pointer object-cover"
+                            src={inst.image || 'https://placehold.co/56x56'}
+                            alt={inst.name || 'Instructor'}
+                            onClick={() => inst.id && navigate(`/trainer/${inst.id}`)}
+                          />
+                          <div className="inline-flex flex-col justify-start items-start gap-0.5">
+                            <div
+                              className="justify-start text-zinc-900 text-xl font-bold cursor-pointer"
+                              onClick={() => inst.id && navigate(`/trainer/${inst.id}`)}
+                            >
+                              {instructorsList.length > 1 ? 'ইন্সট্রাক্টর:' : 'ইন্সট্রাক্টর:'} {inst.name || 'তথ্য নেই'}
+                            </div>
+                            <div className="self-stretch justify-start text-zinc-600 text-base font-normal">
+                              {inst.designation || 'তথ্য নেই'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  )}
                 </div>
                 <div className="inline-flex justify-start items-center gap-4">
                   <div className="flex justify-start items-center gap-1">
@@ -341,11 +333,13 @@ const CourseDetails = () => {
                   </div>
                 </div>
               </div>
-              {/* Course description */}
-              <div className="self-stretch justify-start text-black text-base font-normal  ">
-                {course.description ||
-                  course.CourseFee ||
-                  "কোর্সের বিস্তারিত বর্ণনা পাওয়া যায়নি।"}
+              {/* Course description (render HTML, strip outer paragraph wrapper) */}
+              <div className="self-stretch justify-start text-black text-base font-normal leading-relaxed">
+                {course.description ? (
+                  <div dangerouslySetInnerHTML={{ __html: stripOuterPTags(course.description) }} />
+                ) : (
+                  <span>{course.CourseFee || 'কোর্সের বিস্তারিত বর্ণনা পাওয়া যায়নি।'}</span>
+                )}
               </div>
               {/* Instructor description */}
               {/* {instructor?.description && (

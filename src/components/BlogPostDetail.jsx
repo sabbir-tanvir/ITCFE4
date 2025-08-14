@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
+import { fetchSiteSettings } from "../config/siteSettingsApi";
 
 const BlogPostDetailSkeleton = () => {
   return (
@@ -40,13 +41,15 @@ const BlogPostDetailSkeleton = () => {
 const BlogPostDetail = () => {
   const post = useLoaderData();
   const [loading, setLoading] = useState(true);
+  const [primaryColor, setPrimaryColor] = useState('');
 
   useEffect(() => {
-    // Simulate loading time for shimmer effect
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 800);
-
+    const timer = setTimeout(() => setLoading(false), 800);
+    fetchSiteSettings()
+      .then(data => {
+        if (data?.primary_color) setPrimaryColor(data.primary_color);
+      })
+      .catch(() => {});
     return () => clearTimeout(timer);
   }, []);
 
@@ -87,7 +90,7 @@ const BlogPostDetail = () => {
       {/* Date section */}
       <div className="flex items-center mb-6">
         <div className="flex flex-col items-center justify-center min-w-[60px] mr-4">
-          <span className="text-base sm:text-lg md:text-3xl font-medium text-[#FC5D43] leading-none">
+          <span className="text-base sm:text-lg md:text-3xl font-medium leading-none" style={{ color: primaryColor }}>
             {day} {month}, {year.toString().slice(2)}
           </span>
         </div>

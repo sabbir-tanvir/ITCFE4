@@ -7,7 +7,7 @@ const POSTS_PER_PAGE = 3;
 const Blog = () => {
   const data = useLoaderData();
   const posts = data.results || [];
-  
+
 
   const [visiblePosts, setVisiblePosts] = useState(POSTS_PER_PAGE);
 
@@ -22,24 +22,34 @@ const Blog = () => {
     const year = date.getFullYear();
     return { day, month, year };
   };
-    const [buttonColor, setButtonColor] = useState('#FC5D43');
-    
-      // Fetch button color from site settings
-      useEffect(() => {
-        fetchSiteSettings()
-          .then((data) => {
-            if (data && data.button_color) {
-              setButtonColor(data.button_color);
-            }
-          })
-          .catch(() => {});
-      }, []);
+  const [buttonColor, setButtonColor] = useState('');
+  const [primaryColor, setPrimaryColor] = useState('');
 
-  // Helper to strip outer <p>...</p> tags
-  const stripPTags = (html) => {
+
+  // Fetch button color from site settings
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((data) => {
+        if (data && data.button_color) {
+          setButtonColor(data.button_color);
+          setPrimaryColor(data.primary_color);
+
+        }
+      })
+      .catch(() => { });
+  }, []);
+
+  // Helper to strip ALL html tags & decode entities safely
+  const extractPlainText = (html) => {
     if (!html) return '';
-    // Remove only if it starts and ends with <p>...</p>
-    return html.replace(/^<p>/i, '').replace(/<\/p>$/i, '');
+    // Use DOMParser for safer decoding; fallback to regex removal if DOMParser unavailable
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch {
+      return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
   };
 
   return (
@@ -53,8 +63,8 @@ const Blog = () => {
             style={{ boxShadow: "0 0px 6px rgba(0,0,0,0.12)" }}
           >
             <div className="flex flex-col items-center justify-center min-w-[80px]">
-              <span className="text-4xl font-bold text-[#FC5D43] leading-none text-center">01</span>
-              <span className="text-xl font-medium text-[#FC5D43] text-center">Jan 25</span>
+              <span className="text-4xl font-bold leading-none text-center" style={{ color: primaryColor }}>01</span>
+              <span className="text-xl font-medium text-center" style={{ color: primaryColor }}>Jan 25</span>
             </div>
             <div className="flex-1 flex flex-col justify-center">
               <h2 className="text-xl font-semibold mb-2">ডেমো ব্লগ শিরোনাম</h2>
@@ -67,7 +77,7 @@ const Blog = () => {
         )}
         {posts.length > 0 && posts.slice(0, visiblePosts).map((post) => {
           const { day, month, year } = formatDate(post.created_at);
-          const cleanContent = stripPTags(post.content);
+          const cleanContent = extractPlainText(post.content);
           return (
             <div
               key={post.id}
@@ -75,8 +85,8 @@ const Blog = () => {
               style={{ boxShadow: "0 0px 6px rgba(0,0,0,0.12)" }}
             >
               <div className="flex flex-col items-center justify-center min-w-[80px]">
-                <span className="text-4xl font-bold text-[#FC5D43] leading-none text-center">{day}</span>
-                <span className="text-xl font-medium text-[#FC5D43] text-center">{month} {year.toString().slice(2)}</span>
+                <span className="text-4xl font-bold leading-none text-center" style={{ color: primaryColor }}>{day}</span>
+                <span className="text-xl font-medium text-center" style={{ color: primaryColor }}>{month} {year.toString().slice(2)}</span>
               </div>
               <div className="flex-1 flex flex-col justify-center">
                 <h2 className="text-xl font-semibold">{post.title}</h2>
@@ -94,7 +104,7 @@ const Blog = () => {
           <button
             onClick={showMorePosts}
             className="text-white font-bold py-2 px-4 rounded"
-            style={{ backgroundColor: buttonColor}}
+            style={{ backgroundColor: buttonColor }}
           >
             Show More
           </button>

@@ -442,10 +442,12 @@ const GoogleReview = ({ courseId, reviewsData }) => {
                 <button
                   onClick={handleSubmitReview}
                   disabled={rating === 0 || !comment.trim()}
-                  className={`w-full py-3 rounded-lg font-['Hind_Siliguri'] text-base md:text-lg ${rating === 0 || !comment.trim()
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#186D6D] hover:bg-[#145757] text-white"
+                  className={`w-full py-3 rounded-lg font-['Hind_Siliguri'] text-white text-base md:text-lg ${rating === 0 || !comment.trim()
+                    ? " cursor-not-allowed"
+                    : " text-white"
                     }`}
+                    style={{ backgroundColor: buttoncolor }} 
+                    
                 >
                   Submit Review
                 </button>

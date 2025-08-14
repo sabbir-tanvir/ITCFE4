@@ -150,7 +150,7 @@ const Certificates = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading...</div>;
+    return <div className="text-center py-10"></div>;
   }
   if (error) {
     return <div className="text-center py-10 text-red-500">{error}</div>;

@@ -7,10 +7,26 @@ export async function fetchSiteSettings() {
       "Site-Id": Site_Id,
     },
   });
-  if (!response.ok) {
-    throw new Error("Failed to fetch site settings");
+  let json = null;
+  try {
+    json = await response.json();
+  } catch {
+    // ignore JSON parse errors; will handle below
   }
-  return response.json();
+
+  // Inspect error payload even if status not ok
+  if (json) {
+    const rawDetail = (json.detail || json.details || '').toString();
+    if (/site is not approved/i.test(rawDetail)) {
+      return { _expired: true, message: rawDetail };
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch site settings" + (json?.detail ? `: ${json.detail}` : ''));
+  }
+
+  return json;
 }
 
 export async function fetchSocialLinks() {
@@ -26,7 +42,6 @@ export async function fetchSocialLinks() {
     throw new Error("Failed to fetch social links");
   }
   return response.json();
-  
 }
 
 

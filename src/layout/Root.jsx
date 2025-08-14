@@ -7,11 +7,15 @@ import Footer from "../components/sharedComponents/Footer";
 import Navbar from "../components/sharedComponents/NavbarNew";
 import SpecialDeal from "../components/SpecialDeal/SpecialDeal";
 import { fetchSiteSettings } from "../config/siteSettingsApi";
+import DomainExpired from "../pages/DomainExpired";
+
 
 const Root = () => {
   const [primaryColor, setPrimaryColor] = useState('#FC5D43');
   const [scrollThreshold, setScrollThreshold] = useState(window.innerHeight * 3); // 200vh
     const [isLoading, setIsLoading] = useState(true);
+      const [domainExpired, setDomainExpired] = useState(false);
+
 
 
   // Update scroll threshold on window resize
@@ -24,65 +28,57 @@ const Root = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   // Fetch button color from site settings
+
+    // Fetch button color from site settings
   useEffect(() => {
+    let cancelled = false;
     fetchSiteSettings()
       .then((data) => {
+        if (cancelled) return;
+        if (data?._expired) {
+          setDomainExpired(true);
+          setIsLoading(false);
+          return;
+        }
         if (data && data.primary_color) {
           setPrimaryColor(data.primary_color);
+        }
+        // Also handle meta here to avoid second fetch
+        if (data && !data?._expired) {
+          if (data.site_title) document.title = data.site_title;
+          if (data.favicon) {
+            let link = document.querySelector("link[rel~='icon']");
+            if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+            link.href = data.favicon;
+          }
+          if (data.meta_tag) {
+            const prev = document.querySelectorAll('meta[data-dynamic-meta]');
+            prev.forEach(el => el.parentNode.removeChild(el));
+            const temp = document.createElement('div');
+            temp.innerHTML = data.meta_tag;
+            Array.from(temp.children).forEach((el) => {
+              if (el.tagName === 'META') { el.setAttribute('data-dynamic-meta','true'); document.head.appendChild(el); }
+            });
+          }
         }
         setIsLoading(false);
       })
       .catch(() => { 
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       });
+    return () => { cancelled = true; };
   }, []);
 
 
-  useEffect(() => {
-    fetchSiteSettings()
-      .then((settings) => {
-        // Update document title
-        if (settings.site_title) {
-          document.title = settings.site_title;
-        }
-
-        // Update favicon
-        if (settings.favicon) {
-          let link = document.querySelector("link[rel~='icon']");
-          if (!link) {
-            link = document.createElement("link");
-            link.rel = "icon";
-            document.head.appendChild(link);
-          }
-          link.href = settings.favicon;
-        }
-
-        // Inject meta_tag HTML directly into <head>
-        if (settings.meta_tag) {
-          // Remove any previously injected meta tags (optional, for cleanup)
-          const prev = document.querySelectorAll('meta[data-dynamic-meta]');
-          prev.forEach(el => el.parentNode.removeChild(el));
-
-          // Create a temporary container to parse the HTML string
-          const temp = document.createElement('div');
-          temp.innerHTML = settings.meta_tag;
-
-          // Append each meta tag to the head
-          Array.from(temp.children).forEach((el) => {
-            if (el.tagName === 'META') {
-              el.setAttribute('data-dynamic-meta', 'true');
-              document.head.appendChild(el);
-            }
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching site settings:", error);
-      });
-  }, []);
+  // Removed second fetch effect; first effect handles meta & expiration.
 
   // Helper function to update or create meta tags
-  
+
+
+  if (domainExpired) {
+    return <DomainExpired />;
+  }
+
 
   return (
     <div>

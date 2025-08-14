@@ -43,7 +43,7 @@ const Review = () => {
     return (
       <section className="mt-96 lg:mt-[135px] px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1440px] mx-auto min-h-[400px] flex items-center justify-center text-lg font-semibold text-gray-700">
-          লোড হচ্ছে...
+         
         </div>
       </section>
     );

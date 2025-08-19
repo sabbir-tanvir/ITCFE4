@@ -1,6 +1,6 @@
+import { Api_Base_Url, Site_Id } from './api';
+
 export async function fetchSiteSettings() {
-  const Api_Base_Url = import.meta.env.VITE_API_BASE_URL;
-  const Site_Id = import.meta.env.VITE_SITE_ID;
 
   const response = await fetch(`${Api_Base_Url}/site-settings/?limit=100`, {
     headers: {
@@ -30,8 +30,6 @@ export async function fetchSiteSettings() {
 }
 
 export async function fetchSocialLinks() {
-  const Api_Base_Url = import.meta.env.VITE_API_BASE_URL;
-  const Site_Id = import.meta.env.VITE_SITE_ID;
 
   const response = await fetch(`${Api_Base_Url}/social-links`, {
     headers: {
